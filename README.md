@@ -1,0 +1,96 @@
+# Lanka Crafts – Digital Platform for Traditional Artisans
+
+Lanka Crafts is a comprehensive digital ecosystem designed to empower local Sri Lankan artisans by connecting them directly with tourists. The platform facilitates workshop discovery, secure bookings, and cultural experience sharing through both web and mobile interfaces.
+
+## 🚀 Project Architecture
+
+The project is built using a centralized backend (REST API) that serves both the web and mobile frontends, ensuring data consistency across all platforms.
+
+### Folder Structure
+* **`/backend`**: Node.js & Express API (Centralized logic & database management).
+* **`/webapp-frontend`**: React.js web application for artisans, tourists, and admins.
+* **`/mobileapp-frontend`**: React Native mobile application for on-the-go tourist experiences.
+
+---
+
+## 🛠 Tech Stack
+
+* **Backend:** Node.js, Express.js
+* **Database:** Secured Database (SQL/NoSQL)
+* **Authentication:** JWT (JSON Web Tokens)
+* **Frontend (Web):** React.js
+* **Frontend (Mobile):** React Native
+* **APIs:** Map API, AI Assistance, Email Services
+
+---
+
+## ✨ Key Features
+
+### 1. Tourist Profile & Experience Sharing (Kasun)
+* **User Management:** Secure Sign-up/Sign-in and personalized dashboards.
+* **Blog Module:** Multimedia experience sharing (posts, images, and videos).
+* **Activity Tracking:** Records of attended workshops and interactions.
+
+### 2. Additional Modules
+* Artisan Portfolio & Craft Showcase
+* Workshop Booking & Scheduling System
+* AI-Powered User Assistance & Real-time Communication
+* Review, Rating, & Feedback Management
+* Admin Verification & Analytics Dashboard
+
+---
+
+## ⚙️ Getting Started
+
+### Prerequisites
+* Node.js (v16 or higher)
+* npm or yarn
+* React Native CLI (for mobile development)
+
+### Installation & Running
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/your-username/lanka-crafts.git](https://github.com/your-username/lanka-crafts.git)
+   cd lanka-crafts
+   ```
+2. **Run the Backend:**
+  ```bash
+  cd backend
+  npm install
+  npm start # Runs on http://localhost:5000
+  ```
+3. **Run the Web App:**
+  ```bash
+  cd webapp-frontend
+  npm install
+  npm start # Runs on http://localhost:3000
+  ```
+4. **Run the Mobile App:**
+  ```bash
+  cd mobileapp-frontend
+  npm install
+  npx react-native run-android # or run-ios
+  ```
+
+### ⚠️ Risks & Mitigations
+
+We follow an MVP-based development approach to manage academic deadlines. Key risks such as integration issues and data security are mitigated through centralized API versioning and Role-Based Access Control (RBAC).
+
+### 👥 Team Members - Group ITP_SE_50
+
+* Kasun (Tourist Profile & Experience Sharing)
+* Mihini (Artisan Profile & Showcase)
+* Parami (Booking & Scheduling)
+* Nidurshan (AI & Communication)
+* Uthpala (Reviews & Feedback)
+* Aathif (Admin & Analytics)
+
+
+### Why this works for your project:
+
+* **Professional Appearance**: It shows the lecturers that you understand the "Monorepo" structure you just asked about.
+* [cite_start]**Evidence of Planning**: It lists the "MVP approach" and "Individual Components," which matches the **Evaluation Criteria** in your assignment brief[cite: 16].
+* **Clarity**: It clearly separates the three folders (`backend`, `webapp-frontend`, `mobileapp-frontend`) so any team member can easily understand how to run the project.
+
+**Would you like me to add a specific section for the "Meeting Minutes" link or "API Docum
