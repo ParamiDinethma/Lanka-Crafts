@@ -155,7 +155,7 @@ export function TouristLogin() {
                   color: '#C1440E'
                 }}>
 
-                LankaCrafts
+                Lanka Crafts
               </span>
             </div>
             <p className="text-sm text-gray-400 text-center font-body tracking-wide">

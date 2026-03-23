@@ -1,0 +1,88 @@
+const mongoose = require('mongoose');
+
+const touristSchema = new mongoose.Schema(
+  {
+    // ── Firebase UID (primary identifier) ─────────────────────────────
+    firebaseUid: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+
+    // ── Step 1: Account Setup ──────────────────────────────────────────
+    fullName: {
+      type: String,
+      required: [true, 'Full name is required'],
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    country: {
+      type: String,
+      required: [true, 'Country is required'],
+    },
+    preferredLanguages: {
+      type: [String],
+      default: [],
+    },
+
+    // ── Step 2: Personal Information ───────────────────────────────────
+    idNumber: {
+      type: String,
+      default: '',
+    },
+    dateOfBirth: {
+      type: Date,
+    },
+    address: {
+      line1: { type: String, default: '' },
+      line2: { type: String, default: '' },
+      city: { type: String, default: '' },
+      postalCode: { type: String, default: '' },
+    },
+
+    // ── Step 3: Interests ──────────────────────────────────────────────
+    interests: {
+      type: [String], // e.g. ['batik', 'pottery', 'woodcarving']
+      default: [],
+    },
+    preferredRegions: {
+      type: [String], // e.g. ['kandy', 'galle']
+      default: [],
+    },
+
+    // ── Dashboard Stats ────────────────────────────────────────────────
+    workshopsAttended: { type: Number, default: 0 },
+    reviewsGiven: { type: Number, default: 0 },
+
+    // ── Saved Workshops ────────────────────────────────────────────────
+    savedWorkshops: {
+      type: [String], // store workshop IDs or names
+      default: [],
+    },
+
+    // ── Computed fields (on-the-fly via virtuals / route logic) ────────
+    // blogsPosted    → count of Blog docs by this tourist
+    // upcomingBookings → count of Booking docs with future date
+  },
+  { timestamps: true }
+);
+
+// Virtual: initials for the navbar avatar
+touristSchema.virtual('initials').get(function () {
+  if (!this.fullName) return 'LC';
+  const parts = this.fullName.trim().split(' ');
+  return parts.length >= 2
+    ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+    : parts[0][0].toUpperCase();
+});
+
+touristSchema.set('toJSON', { virtuals: true });
+
+module.exports = mongoose.model('Tourist', touristSchema);

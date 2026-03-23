@@ -4,47 +4,58 @@ import {
   ChevronDownIcon,
   BellIcon,
   LayoutDashboardIcon,
-  CompassIcon,
   BookOpenIcon,
   CalendarIcon,
   UserIcon,
   HeartIcon,
-  LogOutIcon } from
-'lucide-react';
+  LogOutIcon,
+  HomeIcon,
+  MessageCircleIcon
+} from
+  'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 interface TouristNavbarProps {
   userName?: string;
   userInitials?: string;
+  activeTab?: string;
 }
 export function TouristNavbar({
   userName = 'Arjun T.',
-  userInitials = 'AT'
+  userInitials = 'AT',
+  activeTab,
 }: TouristNavbarProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const location = useLocation();
   const navLinks = [
-  {
-    label: 'Dashboard',
-    href: '/tourist/dashboard',
-    icon: LayoutDashboardIcon
-  },
-  {
-    label: 'Explore',
-    href: '/browse',
-    icon: CompassIcon
-  },
-  {
-    label: 'Blogs',
-    href: '/tourist/blogs',
-    icon: BookOpenIcon
-  },
-  {
-    label: 'Bookings',
-    href: '/book',
-    icon: CalendarIcon
-  }];
+    {
+      label: 'Home',
+      href: '/tourist/home',
+      icon: HomeIcon
+    },
+    {
+      label: 'Dashboard',
+      href: '/tourist/dashboard',
+      icon: LayoutDashboardIcon
+    },
+    {
+      label: 'Blogs',
+      href: '/tourist/blogs',
+      icon: BookOpenIcon
+    },
+    {
+      label: 'Bookings',
+      href: '/tourist/bookings',
+      icon: CalendarIcon
+    },
+    {
+      label: 'Inbox',
+      href: '/inbox',
+      icon: MessageCircleIcon
+    }];
 
-  const isActive = (href: string) => location.pathname === href;
+  const isActive = (href: string) => {
+    return location.pathname === href;
+  };
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm h-16">
       <div className="max-w-7xl mx-auto px-8 h-full flex items-center justify-between">
@@ -97,17 +108,17 @@ export function TouristNavbar({
               color: '#C1440E'
             }}>
 
-            LankaCrafts
+            Lanka Crafts
           </span>
         </Link>
 
         {/* Center Nav Links */}
         <div className="hidden md:flex items-center gap-1">
           {navLinks.map(({ label, href, icon: Icon }) =>
-          <Link
-            key={href}
-            to={href}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150 font-body ${isActive(href) ? 'text-[#C1440E] bg-[#FDF0EB]' : 'text-[#1E1E1E] hover:text-[#C1440E] hover:bg-[#FDF0EB]'}`}>
+            <Link
+              key={href}
+              to={href}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150 font-body ${isActive(href) ? 'text-[#C1440E] bg-[#FDF0EB]' : 'text-[#1E1E1E] hover:text-[#C1440E] hover:bg-[#FDF0EB]'}`}>
 
               <Icon className="w-4 h-4" />
               {label}
@@ -121,7 +132,8 @@ export function TouristNavbar({
             className="relative w-9 h-9 flex items-center justify-center rounded-full transition-colors"
             style={{
               backgroundColor: '#FDF0EB'
-            }}>
+            }}
+            aria-label="Notifications">
 
             <BellIcon
               className="w-5 h-5"
@@ -156,26 +168,26 @@ export function TouristNavbar({
 
             <AnimatePresence>
               {dropdownOpen &&
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 8,
-                  scale: 0.96
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  scale: 1
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 8,
-                  scale: 0.96
-                }}
-                transition={{
-                  duration: 0.15
-                }}
-                className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                <motion.div
+                  initial={{
+                    opacity: 0,
+                    y: 8,
+                    scale: 0.96
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: 1
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: 8,
+                    scale: 0.96
+                  }}
+                  transition={{
+                    duration: 0.15
+                  }}
+                  className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
 
                   <div className="p-2">
                     <div className="px-3 py-2 mb-1">
@@ -188,37 +200,46 @@ export function TouristNavbar({
                     </div>
                     <div className="border-t border-gray-100 my-1" />
                     {[
-                  {
-                    icon: UserIcon,
-                    label: 'My Profile',
-                    href: '#'
-                  },
-                  {
-                    icon: HeartIcon,
-                    label: 'My Wishlist',
-                    href: '#'
-                  },
-                  {
-                    icon: CalendarIcon,
-                    label: 'My Bookings',
-                    href: '/book'
-                  }].
-                  map(({ icon: Icon, label, href }) =>
-                  <Link
-                    key={label}
-                    to={href}
-                    onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-[#1E1E1E] hover:bg-[#FAF6F0] transition-colors font-body">
+                      {
+                        icon: UserIcon,
+                        label: 'My Profile',
+                        href: '#'
+                      },
+                      {
+                        icon: HeartIcon,
+                        label: 'My Wishlist',
+                        href: '#'
+                      },
+                      {
+                        icon: CalendarIcon,
+                        label: 'My Bookings',
+                        href: '/tourist/bookings'
+                      },
+                      {
+                        icon: MessageCircleIcon,
+                        label: 'Inbox',
+                        href: '/inbox'
+                      }].
+                      map(({ icon: Icon, label, href }) =>
+                        <Link
+                          key={label}
+                          to={href}
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-[#1E1E1E] hover:bg-[#FAF6F0] transition-colors font-body">
 
-                        <Icon className="w-4 h-4 text-[#1A6B6B]" />
-                        {label}
-                      </Link>
-                  )}
+                          <Icon className="w-4 h-4 text-[#1A6B6B]" />
+                          {label}
+                        </Link>
+                      )}
                     <div className="border-t border-gray-100 my-1" />
-                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-colors font-body">
+                    <Link
+                      to="/login"
+                      onClick={() => setDropdownOpen(false)}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-colors font-body">
+
                       <LogOutIcon className="w-4 h-4" />
                       Logout
-                    </button>
+                    </Link>
                   </div>
                 </motion.div>
               }
