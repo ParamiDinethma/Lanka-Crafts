@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDownIcon,
@@ -14,16 +14,24 @@ import {
 } from
   'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+
+
 interface TouristNavbarProps {
-  userName?: string;
-  userInitials?: string;
   activeTab?: string;
 }
-export function TouristNavbar({
-  userName = 'Arjun T.',
-  userInitials = 'AT',
-  activeTab,
-}: TouristNavbarProps) {
+
+export function TouristNavbar({activeTab}:TouristNavbarProps) {
+  const { tourist } = useAuth();
+
+  useEffect(() => {
+      if (!tourist) return;
+
+    }, [tourist]);
+
+  const userName = tourist?.fullName ?? 'User';
+  const userInitials = tourist?.initials ?? 'U';
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const location = useLocation();
   const navLinks = [
