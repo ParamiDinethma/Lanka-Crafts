@@ -23,6 +23,7 @@ interface TouristNavbarProps {
 
 export function TouristNavbar({activeTab}:TouristNavbarProps) {
   const { tourist } = useAuth();
+  const { logout } = useAuth();
 
   useEffect(() => {
       if (!tourist) return;
@@ -30,14 +31,25 @@ export function TouristNavbar({activeTab}:TouristNavbarProps) {
     }, [tourist]);
 
   const userName = tourist?.fullName ?? 'User';
+  const callingName = tourist?.callingName ?? 'User';
   const userInitials = tourist?.initials ?? 'U';
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setDropdownOpen(false);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+  
   const location = useLocation();
   const navLinks = [
     {
       label: 'Home',
-      href: '/tourist/home',
+      href: '/',
       icon: HomeIcon
     },
     {
@@ -167,7 +179,7 @@ export function TouristNavbar({activeTab}:TouristNavbarProps) {
                 {userInitials}
               </div>
               <span className="text-sm font-medium text-[#1E1E1E] font-body hidden sm:block">
-                {userName}
+                {callingName}
               </span>
               <ChevronDownIcon
                 className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
@@ -241,8 +253,8 @@ export function TouristNavbar({activeTab}:TouristNavbarProps) {
                       )}
                     <div className="border-t border-gray-100 my-1" />
                     <Link
-                      to="/login"
-                      onClick={() => setDropdownOpen(false)}
+                      to="/tourist/login"
+                      onClick={() => handleLogout()}
                       className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-colors font-body">
 
                       <LogOutIcon className="w-4 h-4" />

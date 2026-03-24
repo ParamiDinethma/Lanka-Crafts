@@ -12,6 +12,7 @@ import { registerTourist, loginTourist } from '../services/api';
 interface TouristProfile {
   id: string;
   fullName: string;
+  callingName: string;
   email: string;
   country: string;
   interests: string[];

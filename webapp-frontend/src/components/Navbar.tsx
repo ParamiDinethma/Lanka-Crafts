@@ -69,7 +69,7 @@ export function Navbar() {
               fontFamily: 'Fraunces, serif'
             }}>
 
-            Lanka Craft
+            Lanka Crafts
           </span>
         </Link>
 

@@ -34,6 +34,7 @@ router.post('/register', async (req, res) => {
 
   const {
     fullName,
+    callingName,
     email,
     country,
     preferredLanguages,
@@ -51,6 +52,7 @@ router.post('/register', async (req, res) => {
   const tourist = await Tourist.create({
     firebaseUid: uid,
     fullName,
+    callingName,
     email: email || firebaseEmail,
     country,
     preferredLanguages: preferredLanguages || [],
@@ -66,6 +68,7 @@ router.post('/register', async (req, res) => {
     tourist: {
       id: tourist._id,
       fullName: tourist.fullName,
+      callingName: tourist.callingName,
       email: tourist.email,
       country: tourist.country,
       interests: tourist.interests,
@@ -108,6 +111,7 @@ router.post('/login', async (req, res) => {
     tourist: {
       id: tourist._id,
       fullName: tourist.fullName,
+      callingName: tourist.callingName,
       email: tourist.email,
       country: tourist.country,
       interests: tourist.interests,

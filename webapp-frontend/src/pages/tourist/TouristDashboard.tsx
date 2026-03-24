@@ -243,7 +243,8 @@ export function TouristDashboard() {
   const isLoading = authLoading || statsLoading;
 
   // Derive display values from live profile
-  const fullName = tourist?.fullName ?? 'Traveller';
+  // const fullName = tourist?.fullName ?? 'Traveller';
+  const callingName = tourist?.callingName ?? 'Traveller';
   const country = tourist?.country ?? '';
   const languages = tourist?.preferredLanguages ?? [];
   const interests = (tourist?.interests ?? []).map(id => {
@@ -309,7 +310,7 @@ export function TouristDashboard() {
                   ) : (
                     <>
                       <h1 className="text-3xl font-display font-bold mb-1">
-                        Welcome back, {fullName}! 👋
+                        Welcome back, {callingName}! 👋
                       </h1>
                       <p className="text-white/75 text-base font-body mb-5">
                         Your Cultural Journey Continues

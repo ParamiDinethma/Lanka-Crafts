@@ -131,15 +131,31 @@ export function TouristBlogs() {
     try {
       const sort = TAB_SORT[tab];
       const res = await getBlogs(page, sort);
-      setBlogs(res.data.blogs ?? []);
+      const fetchedBlogs = res.data.blogs ?? [];
+
+      setBlogs(fetchedBlogs);
       setTotalPages(res.data.pagination?.pages ?? 1);
+
+      if (tourist && tourist.id) {
+        const alreadyLikedByMe = new Set<string>();
+        
+        fetchedBlogs.forEach((blog: ApiBlog) => {
+          if (blog.likes && blog.likes.includes(tourist.id)) {
+            alreadyLikedByMe.add(blog._id);
+          }
+        });
+
+        setLikedIds(alreadyLikedByMe);
+      }
+
+
     } catch (err: unknown) {
       setError('Failed to load blog posts. Please try again.');
       setBlogs([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [tourist]);
 
   useEffect(() => {
     fetchBlogs(currentPage, activeTab);
@@ -153,7 +169,7 @@ export function TouristBlogs() {
 
   // ── Like toggle (optimistic) ──────────────────────────────────
   const handleLike = async (blog: ApiBlog) => {
-    if (!tourist) return; // must be logged in
+    if (!tourist) setError('You must Logged in first'); // must be logged in
     const id = blog._id;
     const alreadyLiked = likedIds.has(id);
 
@@ -330,7 +346,7 @@ export function TouristBlogs() {
                         liked={likedIds.has(post._id)}
                         likeDelta={likeDeltas[post._id] ?? 0}
                         onLike={() => handleLike(post)}
-                        delay={i * 0.06} />
+                        delay={i * 0.1} />
                     ))}
                   </div>
                   <div className="flex-1 space-y-4 mt-6">

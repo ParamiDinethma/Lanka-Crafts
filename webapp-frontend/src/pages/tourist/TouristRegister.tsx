@@ -1,37 +1,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  UserIcon, MailIcon, LockIcon, CheckIcon, GlobeIcon,
+  UserIcon, ContactIcon, MailIcon, LockIcon, CheckIcon, GlobeIcon,
   ChevronRightIcon, CreditCardIcon, CalendarIcon,
   HomeIcon, MapPinIcon, ArrowRightIcon, ArrowLeftIcon,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import {INTERESTS} from '../../constants/touristConstants'; 
+import { INTERESTS, REGIONS } from '../../constants/touristConstants'; 
 
-// export const INTERESTS = [
-//   { id: 'pottery', label: 'Pottery', emoji: '🏺' },
-//   { id: 'batik', label: 'Batik', emoji: '🎨' },
-//   { id: 'woodcarving', label: 'Wood Carving', emoji: '🪵' },
-//   { id: 'weaving', label: 'Weaving', emoji: '🧵' },
-//   { id: 'masks', label: 'Mask Making', emoji: '🎭' },
-//   { id: 'lacquer', label: 'Lacquer Work', emoji: '✨' },
-//   { id: 'drumming', label: 'Drumming', emoji: '🥁' },
-//   { id: 'cooking', label: 'Cooking', emoji: '🍛' },
-// ];
 
-const REGIONS = [
-  { id: 'colombo', label: 'Colombo', emoji: '🏙️' },
-  { id: 'kandy', label: 'Kandy', emoji: '🏔️' },
-  { id: 'galle', label: 'Galle', emoji: '🏰' },
-  { id: 'jaffna', label: 'Jaffna', emoji: '🌴' },
-  { id: 'anuradhapura', label: 'Anuradhapura', emoji: '🏛️' },
-  { id: 'sigiriya', label: 'Sigiriya', emoji: '🪨' },
-  { id: 'ella', label: 'Ella', emoji: '🌿' },
-  { id: 'trincomalee', label: 'Trincomalee', emoji: '🌊' },
-  { id: 'negombo', label: 'Negombo', emoji: '⛵' },
-  { id: 'other', label: 'Other', emoji: '📍' },
-];
 
 const COUNTRIES = ['Sri Lanka', 'India', 'United Kingdom', 'United States', 'Australia', 'Germany', 'France', 'Japan', 'Canada', 'Singapore', 'Other'];
 const LANGUAGES = ['English', 'Sinhala', 'Tamil', 'Other'];
@@ -46,7 +24,7 @@ export function TouristRegister() {
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState('');
-  const [step1, setStep1] = useState({ fullName: '', email: '', password: '', confirmPassword: '', country: '' });
+  const [step1, setStep1] = useState({ fullName: '', callingName: '', email: '', password: '', confirmPassword: '', country: '' });
   const [step2, setStep2] = useState({ idNumber: '', dateOfBirth: '', addressLine1: '', addressLine2: '', city: '', postalCode: '' });
 
   const { register } = useAuth();
@@ -85,6 +63,7 @@ export function TouristRegister() {
     try {
       await register(step1.email, step1.password, {
         fullName: step1.fullName,
+        callingName: step1.callingName,
         country: step1.country,
         preferredLanguages: selectedLanguages,
         idNumber: step2.idNumber,
@@ -190,6 +169,14 @@ export function TouristRegister() {
                     <div className="relative">
                       <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input type="text" required value={step1.fullName} onChange={(e) => setStep1({ ...step1, fullName: e.target.value })} placeholder="Arjun Tennakoon" className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#C1440E] focus:border-transparent outline-none text-sm font-body" />
+                    </div>
+                  </div>
+                  {/* Caliing Name */}
+                  <div>
+                    <label className="block text-sm font-semibold text-[#1E1E1E] mb-1.5 font-body">Calling Name</label>
+                    <div className="relative">
+                      <ContactIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <input type="text" required value={step1.callingName} onChange={(e) => setStep1({ ...step1, callingName: e.target.value })} placeholder="Arjun" className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#C1440E] focus:border-transparent outline-none text-sm font-body" />
                     </div>
                   </div>
                   {/* Email */}

@@ -17,7 +17,26 @@ export const INTERESTS: Interest[] = [
   { id: 'cooking', label: 'Cooking', emoji: '🍛' },
 ];
 
-
 export const INTEREST_MAP: Record<string, Interest> = Object.fromEntries(
   INTERESTS.map((i) => [i.id, i])
 );
+
+
+export interface Regions {
+  id: string;
+  label: string;
+  emoji: string;
+}
+
+export const REGIONS: Regions[] = [
+  { id: 'colombo', label: 'Colombo', emoji: '🏙️' },
+  { id: 'kandy', label: 'Kandy', emoji: '🏔️' },
+  { id: 'galle', label: 'Galle', emoji: '🏰' },
+  { id: 'jaffna', label: 'Jaffna', emoji: '🌴' },
+  { id: 'anuradhapura', label: 'Anuradhapura', emoji: '🏛️' },
+  { id: 'sigiriya', label: 'Sigiriya', emoji: '🪨' },
+  { id: 'ella', label: 'Ella', emoji: '🌿' },
+  { id: 'trincomalee', label: 'Trincomalee', emoji: '🌊' },
+  { id: 'negombo', label: 'Negombo', emoji: '⛵' },
+  { id: 'other', label: 'Other', emoji: '📍' },
+];
