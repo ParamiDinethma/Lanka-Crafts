@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { Button } from '../components/ui/Button';
+import { ReviewSection } from '../components/ReviewSection';
 // Shared artist data keyed by route ID
 const ARTISTS_DATA: Record<
   string,
@@ -262,6 +263,9 @@ export function ArtistProfile() {
   const handleBookWorkshop = () => {
     navigate(`/book?craft=${artist.craftId}&artisan=${artist.artisanId}`);
   };
+  const handleMessage = () => {
+    navigate('/inbox');
+  };
   return (
     <div className="min-h-screen bg-offwhite font-body">
       <Navbar />
@@ -318,7 +322,8 @@ export function ArtistProfile() {
               </Button>
               <Button
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-forest gap-2">
+                className="border-white text-white hover:bg-white hover:text-forest gap-2"
+                onClick={handleMessage}>
 
                 <MessageCircle className="w-4 h-4" /> Message
               </Button>
@@ -391,6 +396,9 @@ export function ArtistProfile() {
                 )}
               </div>
             </section>
+
+            {/* Reviews Section */}
+            <ReviewSection context="artisan" artisanName={artist.name} />
           </div>
 
           {/* Right Column: Schedule & Location */}
@@ -428,9 +436,18 @@ export function ArtistProfile() {
                 )}
               </div>
 
-              <Button className="w-full mt-6" onClick={handleBookWorkshop}>
-                Request Booking
-              </Button>
+              <div className="flex flex-col gap-2 mt-6">
+                <Button className="w-full" onClick={handleBookWorkshop}>
+                  Request Booking
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={handleMessage}>
+
+                  <MessageCircle className="w-4 h-4" /> Send Message
+                </Button>
+              </div>
             </div>
 
             {/* Location Map Placeholder */}

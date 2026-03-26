@@ -1,44 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
-export function Navbar() {
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, ChevronDownIcon, UserIcon, LogOutIcon } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+interface NavbarProps {
+  artistMode?: boolean;
+}
+export function Navbar({ artistMode = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-  const links = [
-  {
-    name: 'Explore',
-    path: '/map'
-  },
-  {
-    name: 'Crafts',
-    path: '/#crafts'
-  },
-  {
-    name: 'Artists',
-    path: '/browse'
-  },
-  {
-    name: 'Book a Workshop',
-    path: '/book'
-  }];
+  const leftLinks = artistMode ?
+    [
+      {
+        name: 'Home',
+        path: '/artist/home'
+      },
+      {
+        name: 'Dashboard',
+        path: '/dashboard'
+      },
+      {
+        name: 'Artists',
+        path: '/browse'
+      },
+      {
+        name: 'Book a Workshop',
+        path: '/book'
+      }] :
 
-  const handleLinkClick = (link: {name: string;path: string;}) => {
-    if (link.name === 'Crafts') {
-      const craftsSection = document.getElementById('crafts');
-      if (craftsSection) {
-        craftsSection.scrollIntoView({
-          behavior: 'smooth'
-        });
-      } else {
-        window.location.href = '/#crafts';
-      }
-    }
+    [
+      {
+        name: 'Home',
+        path: '/'
+      },
+      {
+        name: 'Crafts',
+        path: '/crafts'
+      },
+      {
+        name: 'Artists',
+        path: '/browse'
+      },
+      {
+        name: 'Book a Workshop',
+        path: '/book'
+      }];
+
+
+  const isActive = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path) && path !== '/';
   };
   return (
     <nav
@@ -50,7 +66,7 @@ export function Navbar() {
 
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-3 shrink-0">
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
             <circle cx="16" cy="16" r="14" fill="#C9A227" opacity="0.2" />
             <path
@@ -73,129 +89,120 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8">
-          {links.map((link) =>
-          <Link
-            key={link.name}
-            to={link.name === 'Crafts' ? '#' : link.path}
-            onClick={(e) => {
-              if (link.name === 'Crafts') {
-                e.preventDefault();
-                handleLinkClick(link);
-              }
-            }}
-            className="text-white/85 hover:text-white text-sm font-medium tracking-wide transition-colors duration-200 relative group">
+        {/* Desktop: Left Nav Links */}
+        <div className="hidden md:flex items-center gap-1 mx-8 flex-1">
+          {leftLinks.map((link) =>
+            <Link
+              key={link.name}
+              to={link.path}
+              onClick={() => setMenuOpen(false)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium tracking-wide transition-all duration-200 relative group ${isActive(link.path) ? 'text-white bg-white/15' : 'text-white/85 hover:text-white hover:bg-white/10'}`}>
 
               {link.name}
               <span
-              className="absolute -bottom-1 left-0 w-0 h-0.5 bg-mustard group-hover:w-full transition-all duration-300"
-              style={{
-                backgroundColor: '#C9A227'
-              }} />
+                className={`absolute -bottom-0.5 left-4 right-4 h-0.5 rounded-full transition-all duration-300 ${isActive(link.path) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                style={{
+                  backgroundColor: '#C9A227'
+                }} />
 
             </Link>
           )}
-          <div className="flex items-center gap-3 ml-4">
-            <Link
-              to="/login"
-              className="px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg"
-              style={{
-                backgroundColor: '#2F5D50',
-                color: 'white',
-                border: '1px solid rgba(255,255,255,0.3)'
-              }}>
+        </div>
 
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:scale-105 border-2"
-              style={{
-                borderColor: '#C65D3B',
-                color: '#C65D3B',
-                backgroundColor: 'transparent'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#C65D3B';
-                e.currentTarget.style.color = 'white';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = '#C65D3B';
-              }}>
+        {/* Desktop: Right Auth Buttons */}
+        <div className="hidden md:flex items-center gap-3 shrink-0">
+          <Link
+            to="/login"
+            className="px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:scale-105 text-white/90 hover:text-white hover:bg-white/10 border border-white/20">
 
-              Register as Artist
-            </Link>
-          </div>
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:scale-105 border-2 text-white border-white/40 hover:bg-white hover:text-forest"
+            style={{
+              borderColor: '#C9A227',
+              color: '#C9A227'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#C9A227';
+              e.currentTarget.style.color = '#2F5D50';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#C9A227';
+            }}>
+
+            Register
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
         <button
           className="md:hidden text-white p-1"
-          onClick={() => setMenuOpen(!menuOpen)}>
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu">
 
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Mobile Menu */}
-      {menuOpen &&
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: -10
-        }}
-        animate={{
-          opacity: 1,
-          y: 0
-        }}
-        className="md:hidden px-6 pb-6 flex flex-col gap-4"
-        style={{
-          backgroundColor: '#2F5D50'
-        }}>
+      <AnimatePresence>
+        {menuOpen &&
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: -10
+            }}
+            animate={{
+              opacity: 1,
+              y: 0
+            }}
+            exit={{
+              opacity: 0,
+              y: -10
+            }}
+            className="md:hidden px-6 pb-6 flex flex-col gap-2"
+            style={{
+              backgroundColor: '#2F5D50'
+            }}>
 
-          {links.map((link) =>
-        <Link
-          key={link.name}
-          to={link.name === 'Crafts' ? '#' : link.path}
-          className="text-white/85 hover:text-white font-medium py-1"
-          onClick={(e) => {
-            setMenuOpen(false);
-            if (link.name === 'Crafts') {
-              e.preventDefault();
-              handleLinkClick(link);
-            }
-          }}>
+            <div className="border-t border-white/10 pt-4 space-y-1">
+              {leftLinks.map((link) =>
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className="block px-4 py-2.5 rounded-lg text-white/85 hover:text-white hover:bg-white/10 font-medium text-sm transition-colors"
+                  onClick={() => setMenuOpen(false)}>
 
-              {link.name}
-            </Link>
-        )}
-          <Link
-          to="/login"
-          className="px-5 py-2.5 rounded-full text-sm font-semibold text-center mt-2"
-          style={{
-            backgroundColor: '#2F5D50',
-            color: 'white',
-            border: '1px solid rgba(255,255,255,0.3)'
-          }}
-          onClick={() => setMenuOpen(false)}>
+                  {link.name}
+                </Link>
+              )}
+            </div>
+            <div className="border-t border-white/10 pt-3 flex flex-col gap-2">
+              <Link
+                to="/login"
+                className="px-5 py-2.5 rounded-full text-sm font-semibold text-center text-white border border-white/20 hover:bg-white/10 transition-colors"
+                onClick={() => setMenuOpen(false)}>
 
-            Login
-          </Link>
-          <Link
-          to="/register"
-          className="px-5 py-2.5 rounded-full text-sm font-semibold text-center border-2"
-          style={{
-            borderColor: '#C65D3B',
-            color: '#C65D3B'
-          }}
-          onClick={() => setMenuOpen(false)}>
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="px-5 py-2.5 rounded-full text-sm font-semibold text-center border-2 transition-colors"
+                style={{
+                  borderColor: '#C9A227',
+                  color: '#C9A227'
+                }}
+                onClick={() => setMenuOpen(false)}>
 
-            Register as Artist
-          </Link>
-        </motion.div>
-      }
+                Register
+              </Link>
+            </div>
+          </motion.div>
+        }
+      </AnimatePresence>
     </nav>);
 
 }

@@ -28,7 +28,7 @@ export function Footer() {
                   fontFamily: 'Fraunces, serif'
                 }}>
 
-                Lanka Craft
+                Lanka Crafts
               </span>
             </div>
             <p
@@ -168,7 +168,7 @@ export function Footer() {
               fontFamily: 'Inter, sans-serif'
             }}>
 
-            © {new Date().getFullYear()} Lanka Craft Tourism Board. All rights
+            © {new Date().getFullYear()} Lanka Crafts Tourism Board. All rights
             reserved.
           </p>
           <div className="flex gap-6">

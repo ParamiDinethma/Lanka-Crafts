@@ -33,6 +33,7 @@ export function TouristNavbar({activeTab}:TouristNavbarProps) {
   const userName = tourist?.fullName ?? 'User';
   const callingName = tourist?.callingName ?? 'User';
   const userInitials = tourist?.initials ?? 'U';
+  const userProfilePic = tourist?.profilePicUrl ?? '';
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -56,6 +57,11 @@ export function TouristNavbar({activeTab}:TouristNavbarProps) {
       label: 'Dashboard',
       href: '/tourist/dashboard',
       icon: LayoutDashboardIcon
+    },
+    {
+      label: 'Profile',
+      href: '/tourist/profile',
+      icon: UserIcon
     },
     {
       label: 'Blogs',
@@ -166,24 +172,23 @@ export function TouristNavbar({activeTab}:TouristNavbarProps) {
 
           {/* User Dropdown */}
           <div className="relative">
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full hover:bg-gray-50 transition-colors border border-gray-100">
-
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold font-body"
-                style={{
-                  backgroundColor: '#C1440E'
-                }}>
-
-                {userInitials}
+            <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full hover:bg-gray-50 transition-colors border border-gray-100">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold font-body overflow-hidden"
+                style={{ backgroundColor: '#C1440E' }}>
+                {userProfilePic ? (
+                  <img src={userProfilePic} alt={callingName} className="w-full h-full object-cover" />
+                ) : (
+                  <span>{userInitials}</span>
+                )}
               </div>
+              
               <span className="text-sm font-medium text-[#1E1E1E] font-body hidden sm:block">
                 {callingName}
               </span>
+              
               <ChevronDownIcon
-                className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
-
+                className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} 
+              />
             </button>
 
             <AnimatePresence>

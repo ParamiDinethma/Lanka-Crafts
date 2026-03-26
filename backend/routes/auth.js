@@ -61,6 +61,7 @@ router.post('/register', async (req, res) => {
     address: address || {},
     interests: interests || [],
     preferredRegions: preferredRegions || [],
+    profilePicUrl: '',
   });
 
   res.status(201).json({
@@ -70,9 +71,15 @@ router.post('/register', async (req, res) => {
       fullName: tourist.fullName,
       callingName: tourist.callingName,
       email: tourist.email,
-      country: tourist.country,
       interests: tourist.interests,
+      preferredLanguages: tourist.preferredLanguages,
+      preferredRegions: tourist.preferredRegions,
+      idNumber: tourist.idNumber,
+      dateOfBirth: tourist.dateOfBirth,
+      address: tourist.address,
+      savedWorkshops: tourist.savedWorkshops,
       initials: tourist.initials,
+      profilePicUrl: '',
     },
   });
 });
@@ -99,10 +106,10 @@ router.post('/login', async (req, res) => {
 
   const { uid } = decoded;
 
-  const tourist = await Tourist.findOne({ firebaseUid: uid });
+  const tourist = await Tourist.findOne({ firebaseUid: uid, status: 'active' });
   if (!tourist) {
     return res.status(404).json({
-      error: 'Tourist profile not found. Please complete registration.',
+      error: 'Tourist profile not found or deactivated. Please contact support.',
     });
   }
 
@@ -117,9 +124,15 @@ router.post('/login', async (req, res) => {
       interests: tourist.interests,
       preferredLanguages: tourist.preferredLanguages,
       preferredRegions: tourist.preferredRegions,
+      idNumber: tourist.idNumber,
+      dateOfBirth: tourist.dateOfBirth,
+      address: tourist.address,
+      savedWorkshops: tourist.savedWorkshops,
       initials: tourist.initials,
+      profilePicUrl: tourist.profilePicUrl,
     },
   });
 });
+
 
 module.exports = router;

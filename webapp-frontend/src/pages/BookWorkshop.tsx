@@ -15,6 +15,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { Button } from '../components/ui/Button';
+import { ReviewSection } from '../components/ReviewSection';
 // Mock Data
 const CRAFTS = [
 {
@@ -367,7 +368,6 @@ export function BookWorkshop() {
                         </span>
                       </div>
                   }
-                  
                   </div>
                 </div>
               }
@@ -734,6 +734,18 @@ export function BookWorkshop() {
                 }
               </AnimatePresence>
             </div>
+          </div>
+
+          {/* Reviews Section — below booking wizard */}
+          <div className="mt-16">
+            <ReviewSection
+              context="workshop"
+              workshopName={
+              selectedCraft ?
+              CRAFTS.find((c) => c.id === selectedCraft)?.name :
+              'This Workshop'
+              } />
+
           </div>
         </div>
       </main>

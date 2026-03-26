@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { TouristNavbar } from './TouristNavbar';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import { useAuth } from '../../context/AuthContext';
 import { getStats, getMockUpcomingWorkshops, MockWorkshop } from '../../services/api';
 import { INTEREST_MAP } from '../../constants/touristConstants';
@@ -539,11 +540,12 @@ export function TouristDashboard() {
                   Quick Links
                 </h3>
                 <div className="space-y-1">
-                  {[
-                    { icon: UserIcon, label: 'Edit Profile', href: '#' },
-                    { icon: HeartIcon, label: 'My Wishlist', href: '#' },
-                    { icon: CalendarIcon, label: 'My Bookings', href: '/book' },
-                    { icon: BookOpenIcon, label: 'My Blogs', href: '/tourist/blogs' },
+                  {/* {[
+                    { icon: UserIcon, label: 'Edit Profile', href: '../tourist/profile/edit' },
+                    <HashLink smooth to="/tourist/profile#myWishlist">
+                      { icon: HeartIcon, label: 'My Wishlist', href: '../tourist/profile#myWishlist' } </HashLink>,
+                    { icon: CalendarIcon, label: 'My Bookings', href: '../tourist/profile#myBookings' },
+                    { icon: BookOpenIcon, label: 'My Blogs', href: '../tourist/profile#myBlogs' },
                   ].map(({ icon: Icon, label, href }) => (
                     <Link
                       key={label}
@@ -552,7 +554,16 @@ export function TouristDashboard() {
                       <Icon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }} />
                       {label}
                     </Link>
-                  ))}
+                  ))} */}
+
+                  <HashLink smooth to="/tourist/profile/edit" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#1E1E1E] hover:bg-[#FAF6F0] transition-colors font-body">
+                  <UserIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }}/> Edit Profile </HashLink>
+                  <HashLink smooth to="/tourist/profile#myWishlist" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#1E1E1E] hover:bg-[#FAF6F0] transition-colors font-body">
+                  <HeartIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }}/> My Wishlist </HashLink>
+                  <HashLink smooth to="/tourist/profile#myBookings" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#1E1E1E] hover:bg-[#FAF6F0] transition-colors font-body">
+                  <CalendarIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }}/> My Bookings </HashLink>
+                  <HashLink smooth to="/tourist/profile#myBlogs" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#1E1E1E] hover:bg-[#FAF6F0] transition-colors font-body">
+                  <BookOpenIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }}/> My Blogs </HashLink>
                 </div>
               </div>
 

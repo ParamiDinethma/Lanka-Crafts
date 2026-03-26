@@ -72,6 +72,19 @@ const touristSchema = new mongoose.Schema(
       default: [],
     },
 
+    // --- Profile Picture ---------------------------------------------
+    profilePicUrl: {
+      type: String,
+      default: '',
+    },
+
+    // ── Status ─────────────────────────────────────────────────────────
+    status: {
+      type: String,
+      enum: ['active', 'deactivated'],
+      default: 'active',
+    },
+
     // ── Computed fields (on-the-fly via virtuals / route logic) ────────
     // blogsPosted    → count of Blog docs by this tourist
     // upcomingBookings → count of Booking docs with future date

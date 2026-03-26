@@ -40,3 +40,7 @@ export const REGIONS: Regions[] = [
   { id: 'negombo', label: 'Negombo', emoji: '⛵' },
   { id: 'other', label: 'Other', emoji: '📍' },
 ];
+
+export const REGIONS_MAP: Record<string, Regions> = Object.fromEntries(
+  REGIONS.map((i) => [i.id, i])
+);

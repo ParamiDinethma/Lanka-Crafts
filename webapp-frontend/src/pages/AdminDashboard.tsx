@@ -24,7 +24,8 @@ import {
   MapPinIcon,
   ClockIcon,
   AlertCircleIcon,
-  UserIcon } from
+  UserIcon,
+  MessageSquareIcon } from
 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ArtisanVerification } from './admin/ArtisanVerification';
@@ -32,6 +33,7 @@ import { TouristManagement } from './admin/TouristManagement';
 import { AnalyticsReports } from './admin/AnalyticsReports';
 import { WorkshopVerification } from './admin/WorkshopVerification';
 import { UserActivity } from './admin/UserActivity';
+import { ReviewMonitoring } from './admin/ReviewMonitoring';
 type Section =
 'overview' |
 'artisan-verification' |
@@ -39,6 +41,7 @@ type Section =
 'tourist-management' |
 'user-activity' |
 'analytics' |
+'review-monitoring' |
 'role-management' |
 'settings';
 interface NavItem {
@@ -79,6 +82,12 @@ const NAV_ITEMS: NavItem[] = [
   id: 'analytics',
   label: 'Analytics & Reports',
   icon: <BarChart3Icon className="w-4.5 h-4.5" />
+},
+{
+  id: 'review-monitoring',
+  label: 'Review Monitoring',
+  icon: <MessageSquareIcon className="w-4.5 h-4.5" />,
+  badge: 2
 },
 {
   id: 'role-management',
@@ -561,6 +570,8 @@ export function AdminDashboard() {
         return <UserActivity />;
       case 'analytics':
         return <AnalyticsReports />;
+      case 'review-monitoring':
+        return <ReviewMonitoring />;
       case 'role-management':
         return (
           <PlaceholderSection
@@ -648,7 +659,7 @@ export function AdminDashboard() {
                 </div>
                 <div>
                   <p className="text-white font-bold text-sm font-display leading-tight">
-                    Lanka Craft
+                    Lanka Crafts
                   </p>
                   <p className="text-white/50 text-[10px] uppercase tracking-widest">
                     Admin Panel

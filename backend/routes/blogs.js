@@ -168,8 +168,56 @@ router.patch('/:id/like', verifyFirebaseToken, async (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// PATCH /api/tourist/blogs/:id
+// Authenticated — edit own blog (and update status)
+// ─────────────────────────────────────────────────────────────────────────────
+router.patch('/:id', verifyFirebaseToken, upload.single('media'), async (req, res) => {
+  const { title, content, workshopTag, status } = req.body;
+  const blog = await Blog.findById(req.params.id);
+  
+  if (!blog) return res.status(404).json({ error: 'Blog not found.' });
+  if (!blog.author.equals(req.tourist._id)) {
+    return res.status(403).json({ error: 'You can only edit your own blogs.' });
+  }
+
+  let mediaUrl = blog.mediaUrl;
+  let mediaPublicId = blog.mediaPublicId;
+  let mediaType = blog.mediaType;
+
+  if (req.file) {
+    // If there is an old media, destroy it logic could be added here, omitting for simplicity/safety
+    const isVideo = req.file.mimetype.startsWith('video/');
+    const result = await uploadToCloudinary(
+      req.file.buffer,
+      'lankacrafts/blogs',
+      isVideo ? 'video' : 'image'
+    );
+    mediaUrl = result.secure_url;
+    mediaPublicId = result.public_id;
+    mediaType = isVideo ? 'video' : 'image';
+  }
+
+  if (title) blog.title = title;
+  if (content) blog.content = content;
+  if (workshopTag !== undefined) blog.workshopTag = workshopTag;
+  if (mediaUrl) {
+    blog.mediaUrl = mediaUrl;
+    blog.mediaPublicId = mediaPublicId;
+    blog.mediaType = mediaType;
+  }
+  if (status) {
+    blog.status = status;
+  }
+
+  await blog.save();
+
+  const populated = await blog.populate('author', 'fullName country initials');
+  res.json({ message: 'Blog updated successfully.', blog: populated });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // DELETE /api/tourist/blogs/:id
-// Authenticated — delete own blog (also removes Cloudinary media)
+// Authenticated — soft delete own blog
 // ─────────────────────────────────────────────────────────────────────────────
 router.delete('/:id', verifyFirebaseToken, async (req, res) => {
   const blog = await Blog.findById(req.params.id);
@@ -179,14 +227,8 @@ router.delete('/:id', verifyFirebaseToken, async (req, res) => {
     return res.status(403).json({ error: 'You can only delete your own blogs.' });
   }
 
-  // Remove from Cloudinary
-  if (blog.mediaPublicId) {
-    await cloudinary.uploader.destroy(blog.mediaPublicId, {
-      resource_type: blog.mediaType === 'video' ? 'video' : 'image',
-    });
-  }
-
-  await blog.deleteOne();
+  blog.status = 'deleted';
+  await blog.save();
 
   res.json({ message: 'Blog deleted successfully.' });
 });

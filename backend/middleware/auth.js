@@ -22,11 +22,11 @@ const verifyFirebaseToken = async (req, res, next) => {
     const { uid, email } = decodedToken;
 
     // Find the tourist profile in MongoDB by Firebase UID
-    const tourist = await Tourist.findOne({ firebaseUid: uid });
+    const tourist = await Tourist.findOne({ firebaseUid: uid, status: 'active' });
 
     if (!tourist) {
       return res.status(404).json({
-        error: 'Tourist profile not found. Please complete registration.',
+        error: 'Tourist profile not found or deactivated.',
         uid,
       });
     }

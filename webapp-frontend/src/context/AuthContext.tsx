@@ -7,7 +7,7 @@ import {
   User,
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { registerTourist, loginTourist } from '../services/api';
+import { registerTourist, loginTourist, getProfile } from '../services/api';
 
 interface TouristProfile {
   id: string;
@@ -18,7 +18,17 @@ interface TouristProfile {
   interests: string[];
   preferredLanguages: string[];
   preferredRegions: string[];
+  savedWorkshops: string[];
   initials: string;
+  idNumber?: string;
+  dateOfBirth?: string;
+  address?: {
+    line1?: string;
+    line2?: string;
+    city?: string;
+    postalCode?: string;
+  };
+  profilePicUrl?: string;
 }
 
 interface AuthContextType {
@@ -32,6 +42,7 @@ interface AuthContextType {
     profileData: object
   ) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -96,9 +107,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setFirebaseUser(null);
   };
 
+  const refreshUser = async () => {
+    try {
+      const res = await getProfile();
+      setTourist(res.data.tourist);
+    } catch (err) {
+      console.error('Failed to refresh user profile:', err);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ firebaseUser, tourist, loading, login, register, logout }}
+      value={{ firebaseUser, tourist, loading, login, register, logout, refreshUser }}
     >
       {children}
     </AuthContext.Provider>

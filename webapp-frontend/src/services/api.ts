@@ -33,6 +33,11 @@ export const getProfile = () =>
 export const updateProfile = (data: object) =>
   api.patch('/api/tourist/profile', data);
 
+export const uploadProfilePic = (formData: FormData) =>
+  api.post('/api/tourist/profile-picture', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
 export const getStats = () =>
   api.get('/api/tourist/stats');
 
@@ -43,6 +48,11 @@ export const getBlogs = (page = 1, sort = 'recent') =>
 
 export const createBlog = (formData: FormData) =>
   api.post('/api/tourist/blogs', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+export const updateBlog = (id: string, formData: FormData) =>
+  api.patch(`/api/tourist/blogs/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 
