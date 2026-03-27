@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { TouristNavbar } from './TouristNavbar';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { getBlogs, getBookings, getMockUpcomingWorkshops, MockWorkshop } from '../../services/api';
+import { getMyBlogs, getBookings, getMockUpcomingWorkshops, MockWorkshop } from '../../services/api';
 import { INTEREST_MAP, REGIONS_MAP } from '../../constants/touristConstants';
 import {
   CalendarIcon,
@@ -52,14 +52,12 @@ export function TouristProfile() {
     const fetchData = async () => {
       try {
         const [blogsRes, bookingsRes, mockWorkshops] = await Promise.all([
-          getBlogs(1, 'recent'),
+          getMyBlogs(),
           getBookings().catch(() => ({ data: { bookings: [] } })),
           getMockUpcomingWorkshops()
         ]);
-        
-        // Filter blogs by current author
-        const myBlogs = (blogsRes.data.blogs || []).filter((b: any) => b.author?._id === tourist.id);
-        setBlogs(myBlogs);
+
+        setBlogs(blogsRes.data.blogs || []);
 
         setBookings(bookingsRes.data.bookings || []);
 
@@ -91,6 +89,8 @@ export function TouristProfile() {
     const item = REGIONS_MAP[id];
     return item ? `${item.label} ${item.emoji}` : id;
   });
+  const userProfilePic = tourist?.profilePicUrl ?? '';
+  const userInitials = tourist?.initials ?? 'LC';
 
   return (
     <div className="min-h-screen font-body" style={{ backgroundColor: '#FAF6F0' }}>
@@ -103,13 +103,13 @@ export function TouristProfile() {
             variants={containerVariants}
             initial="hidden"
             animate="show">
-            
+
             {/* Banner Section */}
             <motion.div
               variants={itemVariants}
               className="relative rounded-3xl overflow-hidden p-10 text-white"
               style={{ background: 'linear-gradient(135deg, #1A6B6B 0%, #0D4D4D 100%)' }}>
-              
+
               {/* Pattern */}
               <div className="absolute inset-0 opacity-10 pointer-events-none">
                 <svg width="100%" height="100%">
@@ -136,8 +136,12 @@ export function TouristProfile() {
                   ) : (
                     <>
                       <div className="flex items-center gap-4 mb-2">
-                        <div className="w-16 h-16 rounded-full bg-white text-[#1A6B6B] flex items-center justify-center text-2xl font-bold font-display shadow-lg">
-                          {tourist?.initials || 'LC'}
+                        <div className="w-16 h-16 rounded-full bg-white text-[#1A6B6B] flex items-center justify-center text-2xl font-body font-display shadow-lg overflow-hidden">
+                          {userProfilePic ? (
+                            <img src={userProfilePic} alt={callingName} className="w-full h-full object-cover" />
+                          ) : (
+                            <span>{userInitials}</span>
+                          )}
                         </div>
                         <div>
                           <h1 className="text-3xl font-display font-bold">
@@ -148,7 +152,7 @@ export function TouristProfile() {
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex flex-wrap gap-2 mt-4">
                         {country && (
                           <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-body border border-white/30 bg-white/10">
@@ -161,7 +165,7 @@ export function TouristProfile() {
                           </span>
                         ))}
                       </div>
-                      
+
                       <div className='mt-6 mb-2'>
                         <p className="text-white/50 text-xs font-body uppercase tracking-wider mb-1.5">
                           Preferred Regions
@@ -265,7 +269,7 @@ export function TouristProfile() {
               </div>
             </motion.section>
 
-             {/* My Blogs Section */}
+            {/* My Blogs Section */}
             <motion.section variants={itemVariants} id="myBlogs">
               <div className="flex items-center gap-2 mb-4">
                 <BookOpenIcon className="w-5 h-5" style={{ color: '#C1440E' }} />
@@ -276,22 +280,39 @@ export function TouristProfile() {
                   [1, 2].map(i => <SkeletonBlock key={i} className="h-24 w-full" />)
                 ) : blogs.length > 0 ? (
                   blogs.map((b: any) => (
-                    <div key={b._id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex gap-4 items-center">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-base text-[#1E1E1E] mb-1 truncate">{b.title}</h3>
-                        <p className="text-sm text-gray-500 line-clamp-2">{b.content}</p>
+                    <div key={b._id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col sm:flex-row items-stretch hover:shadow-md transition-shadow">
+                      {b.mediaUrl && b.mediaType === 'image' && (
+                        <div className="sm:w-40 h-32 sm:h-auto shrink-0 bg-gray-100">
+                          <img src={b.mediaUrl} alt={b.title} className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      <div className="p-4 flex-1 min-w-0 flex flex-col justify-center">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${b.status === 'draft' ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>
+                                {b.status}
+                              </span>
+                              <span className="text-xs text-gray-400 font-body">
+                                {new Date(b.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <h3 className="font-bold text-base text-[#1E1E1E] mb-1 truncate">{b.title}</h3>
+                            <p className="text-sm text-gray-500 line-clamp-2">{b.content.replace(/<[^>]+>/g, '')}</p>
+                          </div>
+                          <Link
+                            to={`/tourist/blogs/edit/${b._id}`}
+                            className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors shrink-0">
+                            <EditIcon className="w-4 h-4" />
+                          </Link>
+                        </div>
                       </div>
-                      <Link
-                        to={`/tourist/blogs/edit/${b._id}`}
-                        className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors shrink-0">
-                        <EditIcon className="w-4 h-4" />
-                      </Link>
                     </div>
                   ))
                 ) : (
                   <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[120px]">
                     <p className="text-gray-400 text-sm mb-2">You haven't posted any blogs yet.</p>
-                    <Link to="/tourist/blogs" className="text-sm font-bold px-4 py-2 bg-[#C1440E] text-white rounded-xl">Write a Story</Link>
+                    <Link to="/tourist/blogs/create" className="text-sm font-bold px-4 py-2 bg-[#C1440E] text-white rounded-xl">Write a Story</Link>
                   </div>
                 )}
               </div>

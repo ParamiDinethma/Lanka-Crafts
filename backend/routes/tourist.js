@@ -131,4 +131,81 @@ router.get('/stats', verifyFirebaseToken, async (req, res) => {
   });
 });
 
+/**
+ * GET /api/tourist/saved-workshops
+ */
+router.get('/saved-workshops', verifyFirebaseToken, async (req, res) => {
+  res.json({ savedWorkshops: req.tourist.savedWorkshops });
+});
+
+/**
+ * POST /api/tourist/saved-workshops
+ */
+router.post('/saved-workshops', verifyFirebaseToken, express.json(), async (req, res) => {
+  try {
+    const { workshopId } = req.body;
+    if (!workshopId) return res.status(400).json({ error: 'workshopId is required' });
+
+    const updated = await Tourist.findByIdAndUpdate(
+      req.tourist._id,
+      { $addToSet: { savedWorkshops: workshopId.toString() } },
+      { new: true }
+    );
+    res.json({ savedWorkshops: updated.savedWorkshops });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add saved workshop' });
+  }
+});
+
+/**
+ * DELETE /api/tourist/saved-workshops/:id
+ */
+router.delete('/saved-workshops/:id', verifyFirebaseToken, async (req, res) => {
+  try {
+    const workshopId = req.params.id;
+    const updated = await Tourist.findByIdAndUpdate(
+      req.tourist._id,
+      { $pull: { savedWorkshops: workshopId.toString() } },
+      { new: true }
+    );
+    res.json({ savedWorkshops: updated.savedWorkshops });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to remove saved workshop' });
+  }
+});
+
+/**
+ * GET /api/tourist/reviews
+ */
+router.get('/reviews', verifyFirebaseToken, async (req, res) => {
+  res.json({ reviews: req.tourist.reviews || [] });
+});
+
+/**
+ * POST /api/tourist/reviews
+ * Update reviews array given a String array with review IDs
+ */
+router.post('/reviews', verifyFirebaseToken, express.json(), async (req, res) => {
+  try {
+    const { reviewIds } = req.body;
+    if (!Array.isArray(reviewIds)) {
+      return res.status(400).json({ error: 'reviewIds must be an array of strings' });
+    }
+
+    const updated = await Tourist.findByIdAndUpdate(
+      req.tourist._id,
+      { 
+        $set: { 
+          reviews: reviewIds,
+          reviewsGiven: reviewIds.length
+        }
+      },
+      { new: true }
+    );
+    res.json({ reviews: updated.reviews });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update reviews' });
+  }
+});
+
 module.exports = router;

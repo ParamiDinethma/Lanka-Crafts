@@ -7,7 +7,7 @@ const Tourist = require('../models/Tourist');
 const cloudinary = require('../config/cloudinary');
 const { verifyFirebaseToken } = require('../middleware/auth');
 
-// Use memoryStorage so we can pipe buffer to Cloudinary
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 30 * 1024 * 1024 }, // 30 MB
@@ -21,7 +21,7 @@ const upload = multer({
   },
 });
 
-/** Helper: upload a buffer to Cloudinary and return result */
+
 const uploadToCloudinary = (buffer, folder, resourceType = 'auto') =>
   new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -64,8 +64,13 @@ router.get('/', async (req, res) => {
       },
       {
         $addFields: {
-          authorName: { $arrayElemAt: ['$authorData.fullName', 0] },
-          authorCountry: { $arrayElemAt: ['$authorData.country', 0] },
+          author: {
+            _id: { $arrayElemAt: ['$authorData._id', 0] },
+            fullName: { $arrayElemAt: ['$authorData.fullName', 0] },
+            country: { $arrayElemAt: ['$authorData.country', 0] },
+            initials: { $arrayElemAt: ['$authorData.initials', 0] },
+            profilePicUrl: { $arrayElemAt: ['$authorData.profilePicUrl', 0] },
+          }
         },
       },
       { $project: { authorData: 0 } },
@@ -78,7 +83,7 @@ router.get('/', async (req, res) => {
       .sort(sortObj)
       .skip((page - 1) * limit)
       .limit(limit)
-      .populate('author', 'fullName country initials');
+      .populate('author', 'fullName country initials profilePicUrl');
   }
 
   res.json({
@@ -91,6 +96,27 @@ router.get('/', async (req, res) => {
     },
   });
 });
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /api/tourist/blogs/me - with TOKEN
+// Private — list all published and draft blogs by a specific user
+// ─────────────────────────────────────────────────────────────────────────────
+router.get('/me', verifyFirebaseToken, async (req, res) => {
+  try {
+    const blogs = await Blog.find({
+      author: req.tourist._id,
+      status: { $in: ['published', 'draft'] }
+    }).sort({ createdAt: -1 });
+
+    res.json({ blogs });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch personal blogs' });
+  }
+});
+
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/tourist/blogs
@@ -135,7 +161,7 @@ router.post('/', verifyFirebaseToken, upload.single('media'), async (req, res) =
     await Tourist.findByIdAndUpdate(req.tourist._id, { $inc: { workshopsAttended: 0 } }); // keep for future
   }
 
-  const populated = await blog.populate('author', 'fullName country initials');
+  const populated = await blog.populate('author', 'fullName country initials profilePicUrl');
 
   res.status(201).json({
     message: `Blog ${blog.status === 'draft' ? 'saved as draft' : 'published'} successfully.`,
@@ -211,7 +237,7 @@ router.patch('/:id', verifyFirebaseToken, upload.single('media'), async (req, re
 
   await blog.save();
 
-  const populated = await blog.populate('author', 'fullName country initials');
+  const populated = await blog.populate('author', 'fullName country initials profilePicUrl');
   res.json({ message: 'Blog updated successfully.', blog: populated });
 });
 

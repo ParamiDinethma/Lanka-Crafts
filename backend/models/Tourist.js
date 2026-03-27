@@ -66,6 +66,12 @@ const touristSchema = new mongoose.Schema(
     workshopsAttended: { type: Number, default: 0 },
     reviewsGiven: { type: Number, default: 0 },
 
+    // ── Reviews ────────────────────────────────────────────────────────
+    reviews: {
+      type: [String],
+      default: [],
+    },
+
     // ── Saved Workshops ────────────────────────────────────────────────
     savedWorkshops: {
       type: [String], // store workshop IDs or names

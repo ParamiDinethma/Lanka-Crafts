@@ -9,7 +9,7 @@ import { MapTeaser } from '../../components/MapTeaser';
 import { JoinCTA } from '../../components/JoinCTA';
 import { Footer } from '../../components/Footer';
 
-/**
+/*
  * Home page shown when a Tourist clicks "Home" in their navbar.
  * Same content as the public Home but wrapped inside TouristNavbar
  * so the authenticated nav is preserved.

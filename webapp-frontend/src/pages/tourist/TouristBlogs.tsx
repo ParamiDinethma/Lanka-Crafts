@@ -37,6 +37,7 @@ interface BlogAuthor {
   fullName: string;
   country: string;
   initials: string;
+  profilePicUrl?: string;
 }
 
 interface ApiBlog {
@@ -53,19 +54,19 @@ interface ApiBlog {
   createdAt: string;
 }
 
-// ── Fallback image for blogs without media ────────────────────
-const FALLBACK_IMAGES = [
-  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=500&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1566552881560-0be862a7c445?w=500&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&auto=format&fit=crop',
-];
+// // ── Fallback image for blogs without media ────────────────────
+// const FALLBACK_IMAGES = [
+//   'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&auto=format&fit=crop',
+//   'https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=500&auto=format&fit=crop',
+//   'https://images.unsplash.com/photo-1566552881560-0be862a7c445?w=500&auto=format&fit=crop',
+//   'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&auto=format&fit=crop',
+//   'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&auto=format&fit=crop',
+// ];
 
-function getFallbackImage(id: string) {
-  const charSum = id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  return FALLBACK_IMAGES[charSum % FALLBACK_IMAGES.length];
-}
+// function getFallbackImage(id: string) {
+//   const charSum = id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+//   return FALLBACK_IMAGES[charSum % FALLBACK_IMAGES.length];
+// }
 
 function formatDate(iso: string) {
   const d = new Date(iso);
@@ -138,7 +139,7 @@ export function TouristBlogs() {
 
       if (tourist && tourist.id) {
         const alreadyLikedByMe = new Set<string>();
-        
+
         fetchedBlogs.forEach((blog: ApiBlog) => {
           if (blog.likes && blog.likes.includes(tourist.id)) {
             alreadyLikedByMe.add(blog._id);
@@ -246,12 +247,12 @@ export function TouristBlogs() {
 
   // ── Derive top contributors from loaded blogs ─────────────────
   const topContributors = (() => {
-    const counts: Record<string, { name: string; country: string; initials: string; posts: number }> = {};
+    const counts: Record<string, { name: string; country: string; initials: string; profilePicUrl: string; posts: number }> = {};
     blogs.forEach((b) => {
       if (!b.author) return;
       const key = b.author._id;
       if (!counts[key]) {
-        counts[key] = { name: b.author.fullName, country: b.author.country, initials: b.author.initials, posts: 0 };
+        counts[key] = { name: b.author.fullName, country: b.author.country, initials: b.author.initials, profilePicUrl: b.author.profilePicUrl ?? '', posts: 0 };
       }
       counts[key].posts += 1;
     });
@@ -292,9 +293,8 @@ export function TouristBlogs() {
               <button
                 key={tab}
                 onClick={() => handleTabChange(tab)}
-                className={`relative px-4 py-2 rounded-xl text-sm font-medium font-body transition-colors duration-150 ${
-                  activeTab === tab ? 'text-white' : 'text-gray-500 hover:text-[#1E1E1E]'
-                }`}>
+                className={`relative px-4 py-2 rounded-xl text-sm font-medium font-body transition-colors duration-150 ${activeTab === tab ? 'text-white' : 'text-gray-500 hover:text-[#1E1E1E]'
+                  }`}>
                 {activeTab === tab && (
                   <motion.div
                     layoutId="activeTab"
@@ -377,11 +377,10 @@ export function TouristBlogs() {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`w-9 h-9 flex items-center justify-center rounded-xl text-sm font-semibold font-body transition-colors border ${
-                        currentPage === page
-                          ? 'text-white border-[#C1440E]'
-                          : 'bg-white border-gray-200 text-gray-600 hover:border-[#C1440E] hover:text-[#C1440E]'
-                      }`}
+                      className={`w-9 h-9 flex items-center justify-center rounded-xl text-sm font-semibold font-body transition-colors border ${currentPage === page
+                        ? 'text-white border-[#C1440E]'
+                        : 'bg-white border-gray-200 text-gray-600 hover:border-[#C1440E] hover:text-[#C1440E]'
+                        }`}
                       style={currentPage === page ? { backgroundColor: '#C1440E' } : {}}>
                       {page}
                     </button>
@@ -438,12 +437,16 @@ export function TouristBlogs() {
                   {topContributors.length === 0 ? (
                     <p className="text-xs text-gray-400 font-body">No data yet</p>
                   ) : (
-                    topContributors.map(({ name, country, initials, posts }, idx) => (
+                    topContributors.map(({ name, country, initials, profilePicUrl, posts }, idx) => (
                       <div key={name} className="flex items-center gap-3">
                         <div
-                          className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold font-body shrink-0"
+                          className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold font-body shrink-0 overflow-hidden"
                           style={{ backgroundColor: idx === 0 ? '#C1440E' : '#1A6B6B' }}>
-                          {initials || name.charAt(0)}
+                          {profilePicUrl ? (
+                            <img src={profilePicUrl} alt={name} className="w-full h-full object-cover" />
+                          ) : (
+                            initials || name.charAt(0)
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-[#1E1E1E] font-body truncate">
@@ -549,9 +552,8 @@ export function TouristBlogs() {
                   </label>
                   <label
                     htmlFor="media-upload"
-                    className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
-                      uploadedFile ? 'border-[#1A6B6B] bg-[#E8F4F4]' : 'border-gray-200 hover:border-[#C1440E]/40'
-                    }`}>
+                    className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${uploadedFile ? 'border-[#1A6B6B] bg-[#E8F4F4]' : 'border-gray-200 hover:border-[#C1440E]/40'
+                      }`}>
                     <input
                       id="media-upload"
                       type="file"
@@ -629,10 +631,12 @@ interface BlogCardProps {
 }
 
 function BlogCard({ post, liked, likeDelta, onLike, delay }: BlogCardProps) {
-  const imgSrc = post.mediaUrl || getFallbackImage(post._id);
+  const imgSrc = post.mediaUrl || '';
   const displayLikes = (post.likeCount ?? post.likes?.length ?? 0) + likeDelta;
   const authorName = post.author?.fullName ?? 'Anonymous';
   const authorFlag = getFlag(post.author?.country ?? '');
+  const authorInitials = post.author?.initials ?? authorName.charAt(0);
+  const authorProfilePic = post.author?.profilePicUrl ?? '';
 
   return (
     <motion.div
@@ -671,9 +675,13 @@ function BlogCard({ post, liked, likeDelta, onLike, delay }: BlogCardProps) {
         {/* Author */}
         <div className="flex items-center gap-2 mb-3">
           <div
-            className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold font-body shrink-0"
+            className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold font-body shrink-0 overflow-hidden"
             style={{ backgroundColor: '#C1440E' }}>
-            {post.author?.initials || authorName.charAt(0)}
+            {authorProfilePic ? (
+              <img src={authorProfilePic} alt={authorName} className="w-full h-full object-cover" />
+            ) : (
+              <span>{authorInitials}</span>
+            )}
           </div>
           <span className="text-xs font-medium text-[#1E1E1E] font-body">{authorName}</span>
           <span className="text-sm">{authorFlag}</span>

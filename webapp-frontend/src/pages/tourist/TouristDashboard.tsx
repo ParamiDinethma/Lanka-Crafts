@@ -16,7 +16,7 @@ import { TouristNavbar } from './TouristNavbar';
 import { Link } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import { useAuth } from '../../context/AuthContext';
-import { getStats, getMockUpcomingWorkshops, MockWorkshop } from '../../services/api';
+import { getStats, getMockUpcomingWorkshops, MockWorkshop, getSavedWorkshops, addSavedWorkshop, removeSavedWorkshop } from '../../services/api';
 import { INTEREST_MAP } from '../../constants/touristConstants';
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -51,10 +51,10 @@ const itemVariants = {
 // ------------------  MAP -----------------------------
 
 let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
@@ -94,8 +94,8 @@ function MiniCalendar() {
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const monthNames = [
-    'January','February','March','April','May','June',
-    'July','August','September','October','November','December'
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
   const firstDay = new Date(viewYear, viewMonth, 1).getDay();
@@ -112,7 +112,7 @@ function MiniCalendar() {
     ...Array(firstDay).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1)
   ];
-  const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const getDateKey = (day: number) => {
     const m = String(viewMonth + 1).padStart(2, '0');
     const d = String(day).padStart(2, '0');
@@ -136,7 +136,7 @@ function MiniCalendar() {
         </button>
       </div>
       <div className="grid grid-cols-7 mb-1">
-        {['Su','Mo','Tu','We','Th','Fr','Sa'].map((d) => (
+        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((d) => (
           <div key={d} className="text-center text-[10px] font-bold text-gray-400 font-body py-1">{d}</div>
         ))}
       </div>
@@ -148,9 +148,8 @@ function MiniCalendar() {
           return (
             <div key={key} className="flex items-center justify-center">
               <div
-                className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-body cursor-default transition-all ${
-                  isToday ? 'text-white font-bold' : 'text-gray-600 hover:bg-gray-100'
-                }`}
+                className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-body cursor-default transition-all ${isToday ? 'text-white font-bold' : 'text-gray-600 hover:bg-gray-100'
+                  }`}
                 style={isToday ? { backgroundColor: '#C1440E' } : {}}>
                 {day}
               </div>
@@ -222,8 +221,31 @@ export function TouristDashboard() {
   const [upcomingWorkshops, setUpcomingWorkshops] = useState<MockWorkshop[]>([]);
 
   const [savedWorkshops, setSavedWorkshops] = useState<number[]>([]);
-  const toggleSave = (id: number) => {
-    setSavedWorkshops((prev) => prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]);
+
+  // Fetch saved workshops real data from backend
+  useEffect(() => {
+    if (!tourist) return;
+    getSavedWorkshops().then(res => {
+      const saved = (res.data.savedWorkshops || []).map(Number);
+      setSavedWorkshops(saved);
+    }).catch(console.error);
+  }, [tourist]);
+
+  const toggleSave = async (id: number) => {
+    const isSaved = savedWorkshops.includes(id);
+    try {
+      if (isSaved) {
+        setSavedWorkshops((prev) => prev.filter((i) => i !== id));
+        await removeSavedWorkshop(id);
+      } else {
+        setSavedWorkshops((prev) => [...prev, id]);
+        await addSavedWorkshop(id);
+      }
+    } catch (err) {
+      console.error('Failed to update saved workshops', err);
+      if (isSaved) setSavedWorkshops((prev) => [...prev, id]);
+      else setSavedWorkshops((prev) => prev.filter((i) => i !== id));
+    }
   };
 
   // Fetch dashboard stats
@@ -411,9 +433,8 @@ export function TouristDashboard() {
                 {upcomingWorkshops.map((w) => (
                   <div
                     key={w.id}
-                    className={`bg-white rounded-2xl overflow-hidden shrink-0 w-80 border transition-shadow duration-200 ${
-                      w.isNext ? 'border-[#C1440E] shadow-lg shadow-[#C1440E]/10' : 'border-gray-100 shadow-sm hover:shadow-md'
-                    }`}>
+                    className={`bg-white rounded-2xl overflow-hidden shrink-0 w-80 border transition-shadow duration-200 ${w.isNext ? 'border-[#C1440E] shadow-lg shadow-[#C1440E]/10' : 'border-gray-100 shadow-sm hover:shadow-md'
+                      }`}>
                     <div className="relative">
                       <img src={w.img} alt={w.name} className="w-full h-44 object-cover" />
                       {w.isNext && (
@@ -421,9 +442,8 @@ export function TouristDashboard() {
                           Next Up
                         </span>
                       )}
-                      <span className={`absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full font-body ${
-                        w.status === 'Confirmed' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
-                      }`}>
+                      <span className={`absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full font-body ${w.status === 'Confirmed' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                        }`}>
                         {w.status}
                       </span>
                     </div>
@@ -442,12 +462,16 @@ export function TouristDashboard() {
 
             {/* Nearby Workshops Map */}
             <motion.div variants={itemVariants}>
+              <div className='mb-5' >
+                <h2 className="text-2xl font-display font-bold text-[#1E1E1E]">Discover Workshops Near You</h2>
+                <p className="text-xs text-gray-400 font-body mt-0.5">Plan your experience around Sri Lanka</p>
+              </div>
               {/*  <NearbyWorkshopsMap /> */}
               <div style={{ height: '500px', width: '100%' }}>
-                <MapContainer 
+                <MapContainer
                   center={[6.9271, 79.8612]} // Initial center [lat, lng]
-                  zoom={13} 
-                  scrollWheelZoom={true} 
+                  zoom={13}
+                  scrollWheelZoom={true}
                   style={{ height: '100%', width: '100%' }}
                 >
                   <TileLayer
@@ -540,30 +564,14 @@ export function TouristDashboard() {
                   Quick Links
                 </h3>
                 <div className="space-y-1">
-                  {/* {[
-                    { icon: UserIcon, label: 'Edit Profile', href: '../tourist/profile/edit' },
-                    <HashLink smooth to="/tourist/profile#myWishlist">
-                      { icon: HeartIcon, label: 'My Wishlist', href: '../tourist/profile#myWishlist' } </HashLink>,
-                    { icon: CalendarIcon, label: 'My Bookings', href: '../tourist/profile#myBookings' },
-                    { icon: BookOpenIcon, label: 'My Blogs', href: '../tourist/profile#myBlogs' },
-                  ].map(({ icon: Icon, label, href }) => (
-                    <Link
-                      key={label}
-                      to={href}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#1E1E1E] hover:bg-[#FAF6F0] transition-colors font-body">
-                      <Icon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }} />
-                      {label}
-                    </Link>
-                  ))} */}
-
                   <HashLink smooth to="/tourist/profile/edit" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#1E1E1E] hover:bg-[#FAF6F0] transition-colors font-body">
-                  <UserIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }}/> Edit Profile </HashLink>
+                    <UserIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }} /> Edit Profile </HashLink>
                   <HashLink smooth to="/tourist/profile#myWishlist" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#1E1E1E] hover:bg-[#FAF6F0] transition-colors font-body">
-                  <HeartIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }}/> My Wishlist </HashLink>
+                    <HeartIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }} /> My Wishlist </HashLink>
                   <HashLink smooth to="/tourist/profile#myBookings" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#1E1E1E] hover:bg-[#FAF6F0] transition-colors font-body">
-                  <CalendarIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }}/> My Bookings </HashLink>
+                    <CalendarIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }} /> My Bookings </HashLink>
                   <HashLink smooth to="/tourist/profile#myBlogs" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#1E1E1E] hover:bg-[#FAF6F0] transition-colors font-body">
-                  <BookOpenIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }}/> My Blogs </HashLink>
+                    <BookOpenIcon className="w-4 h-4 shrink-0" style={{ color: '#1A6B6B' }} /> My Blogs </HashLink>
                 </div>
               </div>
 

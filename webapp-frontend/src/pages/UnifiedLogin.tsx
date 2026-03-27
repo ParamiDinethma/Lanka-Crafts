@@ -217,6 +217,21 @@ export function UnifiedLogin() {
                   {config.description}
                 </p>
 
+                {selectedRole === 'tourist' ? (
+                  <div className="space-y-4">
+                    <p className="text-sm font-semibold text-gray-700 text-center mb-6">
+                      Hop into the Tourist Portal to explore!
+                    </p>
+                    <motion.button
+                      onClick={() => navigate('/tourist/login')}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full py-3.5 rounded-xl text-white font-bold text-sm transition-all flex items-center justify-center gap-2"
+                      style={{ backgroundColor: config.color }}>
+                      Go to Tourist Portal
+                    </motion.button>
+                  </div>
+                ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {error &&
                     <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm text-center border border-red-100">
@@ -347,19 +362,19 @@ export function UnifiedLogin() {
                     }
                   </motion.button>
                 </form>
+                )}
 
-                <p className="text-center text-sm text-gray-400 mt-5">
-                  Don't have an account?{' '}
-                  <Link
-                    to="/register"
-                    className="font-bold hover:underline"
-                    style={{
-                      color: config.color
-                    }}>
-
-                    Register here
-                  </Link>
-                </p>
+                {selectedRole !== 'tourist' && (
+                  <p className="text-center text-sm text-gray-400 mt-5">
+                    Don't have an account?{' '}
+                    <Link
+                      to="/register"
+                      className="font-bold hover:underline"
+                      style={{ color: config.color }}>
+                      Register here
+                    </Link>
+                  </p>
+                )}
               </motion.div>
             </AnimatePresence>
           </motion.div>
@@ -372,7 +387,7 @@ export function UnifiedLogin() {
           <p className="text-xs font-bold text-white uppercase tracking-widest">🔐 Demo Credentials</p>
         </div>
         <div className="p-3 space-y-2">
-          {(Object.entries(MOCK_CREDENTIALS) as [Role, { email: string; password: string }][]).map(([role, creds]) => {
+          {((Object.entries(MOCK_CREDENTIALS) as [Role, { email: string; password: string }][]).filter(([role]) => role !== 'tourist')).map(([role, creds]) => {
             const cfg = ROLE_CONFIG[role];
             return (
               <div

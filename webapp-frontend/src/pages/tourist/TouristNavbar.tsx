@@ -21,14 +21,14 @@ interface TouristNavbarProps {
   activeTab?: string;
 }
 
-export function TouristNavbar({activeTab}:TouristNavbarProps) {
+export function TouristNavbar({ activeTab }: TouristNavbarProps) {
   const { tourist } = useAuth();
   const { logout } = useAuth();
 
   useEffect(() => {
-      if (!tourist) return;
+    if (!tourist) return;
 
-    }, [tourist]);
+  }, [tourist]);
 
   const userName = tourist?.fullName ?? 'User';
   const callingName = tourist?.callingName ?? 'User';
@@ -45,7 +45,7 @@ export function TouristNavbar({activeTab}:TouristNavbarProps) {
       console.error("Logout failed:", error);
     }
   };
-  
+
   const location = useLocation();
   const navLinks = [
     {
@@ -181,13 +181,13 @@ export function TouristNavbar({activeTab}:TouristNavbarProps) {
                   <span>{userInitials}</span>
                 )}
               </div>
-              
+
               <span className="text-sm font-medium text-[#1E1E1E] font-body hidden sm:block">
                 {callingName}
               </span>
-              
+
               <ChevronDownIcon
-                className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} 
+                className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
               />
             </button>
 
@@ -228,17 +228,17 @@ export function TouristNavbar({activeTab}:TouristNavbarProps) {
                       {
                         icon: UserIcon,
                         label: 'My Profile',
-                        href: '#'
+                        href: '/tourist/profile'
                       },
                       {
                         icon: HeartIcon,
                         label: 'My Wishlist',
-                        href: '#'
+                        href: '/tourist/profile#myWishlist'
                       },
                       {
                         icon: CalendarIcon,
                         label: 'My Bookings',
-                        href: '/tourist/bookings'
+                        href: '/tourist/profile#myBookings'
                       },
                       {
                         icon: MessageCircleIcon,

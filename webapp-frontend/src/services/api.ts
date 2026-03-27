@@ -41,10 +41,28 @@ export const uploadProfilePic = (formData: FormData) =>
 export const getStats = () =>
   api.get('/api/tourist/stats');
 
+export const getSavedWorkshops = () =>
+  api.get('/api/tourist/saved-workshops');
+
+export const addSavedWorkshop = (workshopId: number | string) =>
+  api.post('/api/tourist/saved-workshops', { workshopId });
+
+export const removeSavedWorkshop = (workshopId: number | string) =>
+  api.delete(`/api/tourist/saved-workshops/${workshopId}`);
+
+export const getReviews = () =>
+  api.get('/api/tourist/reviews');
+
+export const updateReviews = (reviewIds: string[]) =>
+  api.post('/api/tourist/reviews', { reviewIds });
+
 // ── Blogs ─────────────────────────────────────────────────────────────────────
 
 export const getBlogs = (page = 1, sort = 'recent') =>
   api.get(`/api/tourist/blogs?page=${page}&sort=${sort}`);
+
+export const getMyBlogs = () =>
+  api.get('/api/tourist/blogs/me');
 
 export const createBlog = (formData: FormData) =>
   api.post('/api/tourist/blogs', formData, {
@@ -88,7 +106,7 @@ export interface MockWorkshop {
 export const getMockUpcomingWorkshops = (): Promise<MockWorkshop[]> =>
   Promise.resolve([
     {
-      id: 1,
+      id: 10,
       img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&auto=format&fit=crop',
       name: 'Batik Textile Workshop',
       artisan: 'Kamala Wijesinghe',
@@ -97,7 +115,7 @@ export const getMockUpcomingWorkshops = (): Promise<MockWorkshop[]> =>
       isNext: true,
     },
     {
-      id: 2,
+      id: 11,
       img: 'https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&auto=format&fit=crop',
       name: 'Traditional Pottery Class',
       artisan: 'Rohan De Silva',
@@ -106,7 +124,7 @@ export const getMockUpcomingWorkshops = (): Promise<MockWorkshop[]> =>
       isNext: false,
     },
     {
-      id: 3,
+      id: 12,
       img: 'https://images.unsplash.com/photo-1566552881560-0be862a7c445?w=400&auto=format&fit=crop',
       name: 'Lacquerwork Masterclass',
       artisan: 'Nimal Perera',
