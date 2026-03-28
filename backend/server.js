@@ -1,14 +1,14 @@
-require('dotenv').config();
-require('express-async-errors');
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
+import 'dotenv/config';
+import 'express-async-errors';
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
 
 // ── Route imports ─────────────────────────────────────────────────────────────
-const authRoutes = require('./routes/auth');
-const touristRoutes = require('./routes/tourist');
-const blogRoutes = require('./routes/blogs');
-const bookingRoutes = require('./routes/bookings');
+import authRoutes from './routes/auth.js';
+import touristRoutes from './routes/tourist.js';
+import blogRoutes from './routes/blogs.js';
+import bookingRoutes from './routes/bookings.js';
 
 // ── App setup ─────────────────────────────────────────────────────────────────
 const app = express();

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const touristSchema = new mongoose.Schema(
   {
@@ -109,4 +109,4 @@ touristSchema.virtual('initials').get(function () {
 
 touristSchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('Tourist', touristSchema);
+export default mongoose.model('Tourist', touristSchema);

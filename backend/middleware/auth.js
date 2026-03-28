@@ -1,5 +1,5 @@
-const admin = require('../config/firebase');
-const Tourist = require('../models/Tourist');
+import admin from '../config/firebase.js';
+import Tourist from '../models/Tourist.js';
 
 /**
  * Middleware: verifyFirebaseToken
@@ -48,4 +48,4 @@ const verifyFirebaseToken = async (req, res, next) => {
   }
 };
 
-module.exports = { verifyFirebaseToken };
+export { verifyFirebaseToken };

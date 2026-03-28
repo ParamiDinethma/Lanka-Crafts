@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
+import { verifyToken, registerTourist, loginTourist } from '../services/authService.js';
+
 const router = express.Router();
-const admin = require('../config/firebase');
-const Tourist = require('../models/Tourist');
 
 /**
  * POST /api/tourist/register
@@ -16,53 +16,9 @@ router.post('/register', async (req, res) => {
   }
 
   const idToken = authHeader.split('Bearer ')[1];
+  const { uid, email: firebaseEmail } = await verifyToken(idToken);
 
-  let decoded;
-  try {
-    decoded = await admin.auth().verifyIdToken(idToken);
-  } catch (err) {
-    return res.status(401).json({ error: 'Invalid or expired Firebase token.' });
-  }
-
-  const { uid, email: firebaseEmail } = decoded;
-
-  // Check if tourist profile already exists
-  const existing = await Tourist.findOne({ firebaseUid: uid });
-  if (existing) {
-    return res.status(409).json({ error: 'Tourist profile already exists for this account.' });
-  }
-
-  const {
-    fullName,
-    callingName,
-    email,
-    country,
-    preferredLanguages,
-    idNumber,
-    dateOfBirth,
-    address,
-    interests,
-    preferredRegions,
-  } = req.body;
-
-  if (!fullName || !country) {
-    return res.status(400).json({ error: 'fullName and country are required.' });
-  }
-
-  const tourist = await Tourist.create({
-    firebaseUid: uid,
-    fullName,
-    callingName,
-    email: email || firebaseEmail,
-    country,
-    preferredLanguages: preferredLanguages || [],
-    idNumber: idNumber || '',
-    dateOfBirth: dateOfBirth || undefined,
-    address: address || {},
-    interests: interests || [],
-    preferredRegions: preferredRegions || [],
-    profilePicUrl: '',
-  });
+  const tourist = await registerTourist(uid, firebaseEmail, req.body);
 
   res.status(201).json({
     message: 'Tourist profile created successfully.',
@@ -79,7 +35,7 @@ router.post('/register', async (req, res) => {
       address: tourist.address,
       savedWorkshops: tourist.savedWorkshops,
       initials: tourist.initials,
-      profilePicUrl: '',
+      profilePicUrl: tourist.profilePicUrl,
     },
   });
 });
@@ -96,22 +52,9 @@ router.post('/login', async (req, res) => {
   }
 
   const idToken = authHeader.split('Bearer ')[1];
+  const { uid } = await verifyToken(idToken);
 
-  let decoded;
-  try {
-    decoded = await admin.auth().verifyIdToken(idToken);
-  } catch (err) {
-    return res.status(401).json({ error: 'Invalid or expired Firebase token.' });
-  }
-
-  const { uid } = decoded;
-
-  const tourist = await Tourist.findOne({ firebaseUid: uid, status: 'active' });
-  if (!tourist) {
-    return res.status(404).json({
-      error: 'Tourist profile not found or deactivated. Please contact support.',
-    });
-  }
+  const tourist = await loginTourist(uid);
 
   res.json({
     message: 'Logged in successfully.',
@@ -134,5 +77,4 @@ router.post('/login', async (req, res) => {
   });
 });
 
-
-module.exports = router;
+export default router;

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const blogSchema = new mongoose.Schema(
   {
@@ -56,4 +56,4 @@ blogSchema.virtual('likeCount').get(function () {
 
 blogSchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('Blog', blogSchema);
+export default mongoose.model('Blog', blogSchema);

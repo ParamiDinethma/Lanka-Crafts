@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { verifyFirebaseToken } from '../middleware/auth.js';
+import { getBookings, createBooking, cancelBooking } from '../services/bookingService.js';
+
 const router = express.Router();
-const Booking = require('../models/Booking');
-const { verifyFirebaseToken } = require('../middleware/auth');
 
 /**
  * GET /api/tourist/bookings
@@ -9,18 +10,7 @@ const { verifyFirebaseToken } = require('../middleware/auth');
  * split into upcoming and past.
  */
 router.get('/', verifyFirebaseToken, async (req, res) => {
-  const touristId = req.tourist._id;
-  const now = new Date();
-
-  const [upcoming, past] = await Promise.all([
-    Booking.find({ tourist: touristId, date: { $gte: now } })
-      .sort({ date: 1 })
-      .lean(),
-    Booking.find({ tourist: touristId, date: { $lt: now } })
-      .sort({ date: -1 })
-      .lean(),
-  ]);
-
+  const { upcoming, past } = await getBookings(req.tourist._id);
   res.json({ upcoming, past });
 });
 
@@ -30,23 +20,7 @@ router.get('/', verifyFirebaseToken, async (req, res) => {
  * (Used when the BookWorkshop page is linked to a tourist account.)
  */
 router.post('/', verifyFirebaseToken, async (req, res) => {
-  const { workshopName, artisan, location, date, status, imageUrl, price } = req.body;
-
-  if (!workshopName || !date) {
-    return res.status(400).json({ error: 'workshopName and date are required.' });
-  }
-
-  const booking = await Booking.create({
-    tourist: req.tourist._id,
-    workshopName,
-    artisan: artisan || '',
-    location: location || '',
-    date: new Date(date),
-    status: status || 'Pending',
-    imageUrl: imageUrl || '',
-    price: price || '',
-  });
-
+  const booking = await createBooking(req.tourist._id, req.body);
   res.status(201).json({ message: 'Booking created.', booking });
 });
 
@@ -55,17 +29,8 @@ router.post('/', verifyFirebaseToken, async (req, res) => {
  * Cancel a booking (only owns bookings can be cancelled).
  */
 router.patch('/:id/cancel', verifyFirebaseToken, async (req, res) => {
-  const booking = await Booking.findById(req.params.id);
-  if (!booking) return res.status(404).json({ error: 'Booking not found.' });
-
-  if (!booking.tourist.equals(req.tourist._id)) {
-    return res.status(403).json({ error: 'You can only cancel your own bookings.' });
-  }
-
-  booking.status = 'Cancelled';
-  await booking.save();
-
+  const booking = await cancelBooking(req.params.id, req.tourist._id);
   res.json({ message: 'Booking cancelled.', booking });
 });
 
-module.exports = router;
+export default router;

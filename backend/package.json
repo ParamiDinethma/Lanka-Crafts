@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Tourist Management Backend for LankaCrafts — Node.js, Express, MongoDB, Firebase Auth, Cloudinary",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"

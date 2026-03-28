@@ -43,35 +43,35 @@ export function TouristProfileEdit() {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      if (file.size > 5 * 1024 * 1024) {
-        setUploadError('File exceeds 5MB limit.');
-        return;
-      }
-      setUploadError('');
-      setUploadingImage(true);
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('File exceeds 5MB limit.');
+      return;
+    }
+    setUploadError('');
+    setUploadingImage(true);
 
-      try {
-        const payload = new FormData();
-        payload.append('profilePic', file);
-        
-        const response = await uploadProfilePic(payload);
-        setCurrentMediaUrl(response.data.profilePicUrl);
-        setSuccess('Profile picture updated successfully!');
-        
-        // Clear success message after 3 seconds so it's not permanently stuck there
-        setTimeout(() => setSuccess(''), 3000);
-        
-        if (refreshUser) {
-          await refreshUser();
-        }
-      } catch (err: any) {
-        setUploadError(err.response?.data?.error || 'Failed to upload image.');
-      } finally {
-        setUploadingImage(false);
+    try {
+      const payload = new FormData();
+      payload.append('profilePic', file);
+
+      const response = await uploadProfilePic(payload);
+      setCurrentMediaUrl(response.data.profilePicUrl);
+      setSuccess('Profile picture updated successfully!');
+
+      // Clear success message after 3 seconds so it's not permanently stuck there
+      setTimeout(() => setSuccess(''), 3000);
+
+      if (refreshUser) {
+        await refreshUser();
       }
-    };
+    } catch (err: any) {
+      setUploadError(err.response?.data?.error || 'Failed to upload image.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
 
   const handleLogout = async () => {
@@ -106,25 +106,28 @@ export function TouristProfileEdit() {
   const toggleRegion = (id: string) => setSelectedRegions(p => p.includes(id) ? p.filter(i => i !== id) : [...p, id]);
   const toggleLanguage = (lang: string) => setSelectedLanguages(p => p.includes(lang) ? p.filter(l => l !== lang) : [...p, lang]);
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setSubmitting(true);
-  
-  try {
-    await updateProfile({
-      ...formData,
-      address: {
-        line1: formData.addressLine1,
-        line2: formData.addressLine2,
-        city: formData.city,
-        postalCode: formData.postalCode,
-      },
-      preferredLanguages: selectedLanguages,
-      interests: selectedInterests,
-      preferredRegions: selectedRegions,
-    });
-  
-    setSuccess('Profile updated!');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setSubmitting(true);
+
+    try {
+      await updateProfile({
+        ...formData,
+        address: {
+          line1: formData.addressLine1,
+          line2: formData.addressLine2,
+          city: formData.city,
+          postalCode: formData.postalCode,
+        },
+        preferredLanguages: selectedLanguages,
+        interests: selectedInterests,
+        preferredRegions: selectedRegions,
+      });
+
+      setSuccess('Profile updated!');
+      setTimeout(() => navigate('/tourist/profile'), 500);
     } catch (err) {
       setError('Failed to update');
     } finally {
@@ -138,7 +141,6 @@ const handleSubmit = async (e: React.FormEvent) => {
     setDeactivating(true);
     try {
       await updateProfile({ status: 'deactivated' });
-      // Might want to sign out directly using firebase auth here, but rely on user routing or refresh for now
       handleLogout();
       window.location.href = '/tourist/login';
     } catch (err: any) {
@@ -294,14 +296,13 @@ const handleSubmit = async (e: React.FormEvent) => {
                   </label>
                   <label
                     htmlFor="media-upload"
-                    className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
-                      uploadingImage ? 'border-[#1A6B6B] bg-[#E8F4F4] opacity-70' : 'border-gray-200 hover:border-[#C1440E]/40'
-                    }`}>
-                      {currentMediaUrl && !uploadingImage && (
-                        <div className="mb-3 relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
-                          <img src={currentMediaUrl} alt="Current media" className="w-full h-full object-cover" />
-                        </div>
-                      )}
+                    className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${uploadingImage ? 'border-[#1A6B6B] bg-[#E8F4F4] opacity-70' : 'border-gray-200 hover:border-[#C1440E]/40'
+                      }`}>
+                    {currentMediaUrl && !uploadingImage && (
+                      <div className="mb-3 relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md">
+                        <img src={currentMediaUrl} alt="Current media" className="w-full h-full object-cover" />
+                      </div>
+                    )}
                     <input
                       id="media-upload"
                       type="file"
@@ -330,7 +331,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               <div className="pt-6 border-t flex flex-col sm:flex-row gap-4 justify-between items-center">
                 <div className="flex gap-3 w-full sm:w-auto">
                   <button type="button" onClick={() => navigate('/tourist/profile')} className="px-6 py-3 rounded-xl border bg-white font-semibold text-gray-600 hover:bg-gray-50 flex-1 sm:flex-none">Cancel</button>
-                  <button type="submit" disabled={submitting} onClick={() => navigate('/tourist/profile')} className="px-8 py-3 rounded-xl bg-[#1A6B6B] text-white font-semibold hover:bg-[#135454] disabled:opacity-50 flex-1 sm:flex-none">
+                  <button type="submit" disabled={submitting} className="px-8 py-3 rounded-xl bg-[#1A6B6B] text-white font-semibold hover:bg-[#135454] disabled:opacity-50 flex-1 sm:flex-none">
                     {submitting ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
