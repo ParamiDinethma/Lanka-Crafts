@@ -4,6 +4,7 @@ import { Check, ChevronRight, ChevronLeft, Upload, Plus } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { Button } from '../components/ui/Button';
+import { artisanApi } from '../api';
 export function ArtistRegistration() {
   const [step, setStep] = useState(1);
   // Form State
@@ -78,16 +79,9 @@ export function ArtistRegistration() {
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
   const handleRegister = async () => {
   try {
-    const response = await fetch('http://localhost:5002/api/artisans/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
-
-    if (response.ok) {
-      // Redirect to ArtistDashboard.tsx or show success
-      console.log("Registered!");
-    }
+    const response = await artisanApi.register(formData);
+    // Redirect to ArtistDashboard.tsx or show success
+    console.log("Registered!", response);
   } catch (err) {
     console.error("Submission failed", err);
   }

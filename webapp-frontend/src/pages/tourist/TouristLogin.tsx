@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { MailIcon, LockIcon, EyeIcon, EyeOffIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { touristApi } from '../../api';
 
 export function TouristLogin() {
 
@@ -21,14 +22,11 @@ export function TouristLogin() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        'http://localhost:5002/api/tourists/login',
-        { email, password }
-      );
+      const data = await touristApi.login({ email, password });
 
-      if (response.status === 200) {
-        localStorage.setItem('userEmail', response.data.user.email);
-        localStorage.setItem('userName', response.data.user.name);
+      if (data) {
+        localStorage.setItem('userEmail', data.user.email);
+        localStorage.setItem('userName', data.user.name);
         navigate('/tourist/dashboard');
       }
     } catch (err: any) {

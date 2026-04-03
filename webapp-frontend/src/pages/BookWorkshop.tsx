@@ -3,6 +3,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { bookingApi } from '../api';
 import {
   Calendar,
   Users,
@@ -114,25 +115,13 @@ export function BookWorkshop() {
     };
 
     try {
-      const response = await fetch('http://localhost:5002/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingPayload),
-      });
-
-      if (response.ok) {
-        setIsSuccess(true);
-        window.scrollTo(0, 0);
-      } else {
-        alert("Failed to save booking. Please try again.");
-      }
+      await bookingApi.createBooking(bookingPayload);
+      setIsSuccess(true);
+      window.scrollTo(0, 0);
     } catch (error) {
       console.error("Error submitting booking:", error);
-      alert("Server error. Is your backend running?");
+      alert("Failed to save booking or server error. Please try again.");
     } finally {
-
       setIsSubmitting(false);
     }
   };

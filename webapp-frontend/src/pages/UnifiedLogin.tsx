@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
+import { touristApi } from '../api';
 import {
   MailIcon,
   LockIcon,
@@ -65,35 +66,25 @@ export function UnifiedLogin() {
 
     // Only tourist login from database for now
     if (selectedRole === 'tourist') {
-      const response = await fetch(
-        'http://localhost:5002/api/tourists/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || 'Invalid credentials');
-        setIsLoading(false);
-        return;
-      }
+      const data = await touristApi.login({ email, password });
 
       // Optional: store user in localStorage
       localStorage.setItem('tourist', JSON.stringify(data.user));
+      if (data.token) {
+        localStorage.setItem('token', data.token); // In case they add JWT later
+      }
 
       navigate('/tourist/dashboard');
     }
 
     // You can later add artist/admin backend login here
 
-  } catch (err) {
-    setError('Server error. Please try again.');
+  } catch (err: any) {
+    if (err.response?.data?.message) {
+      setError(err.response.data.message);
+    } else {
+      setError('Server error. Please try again.');
+    }
   } finally {
     setIsLoading(false);
   }

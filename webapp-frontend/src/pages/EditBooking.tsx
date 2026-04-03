@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import { bookingApi } from "../api";
 
 const EditBooking = () => {
   const { id } = useParams();
@@ -13,10 +13,10 @@ const EditBooking = () => {
 
   useEffect(() => {
     const fetchBooking = async () => {
-      const res = await axios.get(`http://localhost:5002/api/bookings/${id}`);
+      const data = await bookingApi.getBookingById(id as string);
       setFormData({
-        bookingDate: res.data.bookingDate,
-        bookingTime: res.data.bookingTime
+        bookingDate: data.bookingDate,
+        bookingTime: data.bookingTime
       });
     };
 
@@ -26,7 +26,7 @@ const EditBooking = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await axios.put(`http://localhost:5002/api/bookings/${id}`, formData);
+    await bookingApi.updateBooking(id as string, formData);
 
     alert("Booking updated successfully!");
     navigate("/my-bookings");

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios'; // Add this
 import { useNavigate } from 'react-router-dom'; // Add this
+import { touristApi } from '../../api';
 import {
   UserIcon,
   MailIcon,
@@ -205,10 +206,10 @@ export function TouristRegister() {
   };
 
   try {
-    // 1. POST to your backend (adjust port if necessary)
-    const response = await axios.post('http://localhost:5002/api/tourists/register', registrationData);
+    // 1. POST to your backend using API client
+    const responseData = await touristApi.register(registrationData);
 
-    if (response.status === 201 || response.status === 200) {
+    if (responseData) {
       // 2. SAVE session data so the rest of the app knows who is logged in
       localStorage.setItem('userEmail', step1.email);
       localStorage.setItem('userName', step1.fullName);

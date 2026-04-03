@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'; 
+import { bookingApi } from '../api';
 import { Calendar, Clock, Tag, Loader2, RefreshCw, Trash2, Pencil, Check, X } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 // Define the Interface for TypeScript
@@ -36,9 +37,8 @@ const MyBookings: React.FC = () => {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      // Axios returns an object where the data is in the 'data' property
-      const response = await axios.get(`http://localhost:5002/api/bookings/user/${email}`);
-      setBookings(response.data);
+      const data = await bookingApi.getBookingsByEmail(email);
+      setBookings(data);
     } catch (error: any) {
       console.error("Error fetching bookings:", error.response?.data || error.message);
     } finally {
@@ -50,7 +50,7 @@ const MyBookings: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to cancel this booking?")) {
       try {
-        await axios.delete(`http://localhost:5002/api/bookings/${id}`);
+        await bookingApi.deleteBooking(id);
         setBookings(bookings.filter(b => b._id !== id));
       } catch (error: any) {
         console.error("Delete failed:", error.response?.data || error.message);
@@ -71,12 +71,10 @@ const MyBookings: React.FC = () => {
   const handleUpdate = async (id: string) => {
     try {
       // In Axios, you pass the data object as the second argument for PUT/POST
-      const response = await axios.put(`http://localhost:5002/api/bookings/${id}`, editData);
+      await bookingApi.updateBooking(id, editData);
       
-      if (response.status === 200 || response.status === 204) {
-        setBookings(bookings.map(b => b._id === id ? { ...b, ...editData as Booking } : b));
-        setEditingId(null);
-      }
+      setBookings(bookings.map(b => b._id === id ? { ...b, ...editData as Booking } : b));
+      setEditingId(null);
     } catch (error: any) {
       console.error("Update failed:", error.response?.data || error.message);
       alert("Failed to update the booking.");
