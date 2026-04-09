@@ -37,7 +37,7 @@ app.use('/api/tourists', touristRoutes);
 
 
 
- // Essential for reading the form data
+
 app.use('/api/artisans', artisanRoutes);
 
 app.get('/api/artisans', async (req, res) => {

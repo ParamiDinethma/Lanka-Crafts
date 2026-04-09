@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 
 const bookingSchema = new mongoose.Schema({
-  artisanId: { type: String, required: true }, 
-  
+  artisanId: { type: String, required: true },
   craftId: { type: String, required: true },
   customerName: { type: String, required: true },
   customerEmail: { type: String, required: true },
@@ -14,4 +13,4 @@ const bookingSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Booking', bookingSchema);
+module.exports = mongoose.model('workshopBooking', bookingSchema);

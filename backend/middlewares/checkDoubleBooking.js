@@ -1,4 +1,4 @@
-const Booking = require('../models/Booking');
+const Booking = require('../models/workshopBooking');
 
 const checkDoubleBooking = async (req, res, next) => {
   try {
@@ -16,7 +16,7 @@ const checkDoubleBooking = async (req, res, next) => {
       artisanId,
       bookingDate: date,
       bookingTime: time,
-      status: { $in: ['pending', 'confirmed'] } 
+      status: { $in: ['pending', 'confirmed'] }
     };
 
     if (req.params.id) {

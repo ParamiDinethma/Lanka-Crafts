@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const bookingController = require('../controllers/bookingController');
+const bookingController = require('../services/bookingController');
 const { verifyToken, verifyRole } = require('../middlewares/authMiddleware');
 const { validateBookingBody } = require('../middlewares/validateBooking');
 const { checkDoubleBooking } = require('../middlewares/checkDoubleBooking');

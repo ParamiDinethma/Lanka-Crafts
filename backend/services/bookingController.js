@@ -1,19 +1,19 @@
-const Booking = require('../models/Booking');
+const Booking = require('../models/workshopBooking');
 
 // --------------------
 // CREATE BOOKING
 // --------------------
 exports.createBooking = async (req, res) => {
   try {
-    const { 
+    const {
       artisanId,
-      craftId, 
-      name, 
-      email, 
-      phone, 
-      date, 
-      time, 
-      groupSize 
+      craftId,
+      name,
+      email,
+      phone,
+      date,
+      time,
+      groupSize
     } = req.body;
 
     const newBooking = new Booking({

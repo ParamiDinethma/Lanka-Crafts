@@ -774,32 +774,32 @@ const CRAFTS = [
   {
     id: 'batik',
     name: 'Batik Textiles',
-    icon: '🎨'
+    icon: ''
   },
   {
     id: 'lacquer',
     name: 'Lacquerwork',
-    icon: '🏺'
+    icon: ''
   },
   {
     id: 'masks',
     name: 'Mask Carving',
-    icon: '🎭'
+    icon: ''
   },
   {
     id: 'pottery',
     name: 'Pottery',
-    icon: '⚱️'
+    icon: ''
   },
   {
     id: 'brass',
     name: 'Brasswork',
-    icon: '🔨'
+    icon: ''
   },
   {
     id: 'weaving',
     name: 'Handloom Weaving',
-    icon: '🧵'
+    icon: ''
   }];
 const AVAILABLE_TIMES = [
   {

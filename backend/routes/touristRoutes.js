@@ -17,7 +17,7 @@ router.post('/register', async (req, res) => {
     const newTourist = new Tourist(req.body);
     await newTourist.save();
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: "Registration successful!",
       user: { email: newTourist.email, name: newTourist.fullName }
     });
